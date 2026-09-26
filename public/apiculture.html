@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Apiculture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Interactive Card Hover Effect */
+        .info-card {
+             transition: all 0.4s ease;
+             cursor: pointer;
+             overflow: hidden;
+             position: relative;
+        }
+        .info-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+        .info-card-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease-in-out, opacity 0.6s ease-in-out 0.2s, padding-top 0.8s ease-in-out, margin-top 0.8s ease-in-out;
+        }
+        .info-card:hover .info-card-details {
+            max-height: 2500px; /* Increased for more content */
+            opacity: 1;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .info-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            animation: pan-image 25s linear infinite alternate;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            z-index: -1;
+        }
+        .info-card:hover .info-card-bg {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        @keyframes pan-image {
+            from { background-position: 0% 50%; }
+            to { background-position: 100% 50%; }
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(10, 40, 20, 0.9) 0%, rgba(10, 40, 20, 0.3) 100%);
+            z-index: 0;
+        }
+        .info-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .table-auto th, .table-auto td {
+            border: 1px solid #718096;
+            padding: 8px;
+        }
+        .table-auto th {
+            background-color: #2c5282;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="मراठी">मراठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="relative bg-cover bg-center py-20">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('backbee.png'); z-index: -1;"></div>
+            <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white" data-translate="apiculture_title">Apiculture</h1>
+                <p class="mt-4 text-gray-200 max-w-2xl mx-auto" data-translate="apiculture_subtitle">A comprehensive guide to beekeeping under varied Indian conditions.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                <!-- Major Bee Species Section -->
+                <div>
+                    <h2 class="text-3xl font-bold text-green-900 text-center mb-2" data-translate="species_guide_title">Major Bee Species for Indian Apiculture</h2>
+                    <a href="https://www.youtube.com/watch?v=kGb46be-uH4" ><h3 class="text-center text-gray-600 mb-12" data-translate="hover_prompt_main"><b>Click here to check the full video of Apiculture.</b></h3></a>
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <!-- Apis cerana indica Card -->
+                        <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                            <div class="info-card-bg" style="background-image: url('beind.png');"></div>
+                            <h3 class="text-4xl font-bold" data-translate="cerana_title">Apis cerana indica</h3>
+                            <span class="text-lg italic" data-translate="cerana_subtitle">(Indian Hive Bee)</span>
+                            <div class="info-card-details border-t text-left">
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li><strong data-translate="native_status">Native/Exotic:</strong> <span data-translate="native">Native</span></li>
+                                    <li><strong data-translate="colony_size">Colony Size:</strong> 20,000–30,000 bees</li>
+                                    <li><strong data-translate="honey_yield">Honey Yield:</strong> 8–12 kg/colony/season</li>
+                                    <li><strong data-translate="disease_res">Disease Resistance:</strong> <span data-translate="cerana_disease">Good tolerance to Nosema & Varroa.</span></li>
+                                    <li><strong data-translate="management">Management:</strong> <span data-translate="cerana_management">Suitable for smallholders and low-input hives.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Apis mellifera Card -->
+                        <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                            <div class="info-card-bg" style="background-image: url('bee2.png');"></div>
+                            <h3 class="text-4xl font-bold" data-translate="mellifera_title">Apis mellifera</h3>
+                            <span class="text-lg italic" data-translate="mellifera_subtitle">(European Honey Bee)</span>
+                            <div class="info-card-details border-t text-left">
+                               <ul class="list-disc list-inside space-y-2">
+                                    <li><strong data-translate="native_status">Native/Exotic:</strong> <span data-translate="exotic">Exotic</span></li>
+                                    <li><strong data-translate="colony_size">Colony Size:</strong> 40,000–60,000 bees</li>
+                                    <li><strong data-translate="honey_yield">Honey Yield:</strong> 20–30 kg/colony/season</li>
+                                    <li><strong data-translate="disease_res">Disease Susceptibility:</strong> <span data-translate="mellifera_disease">Higher risk of Varroa & Foulbrood.</span></li>
+                                    <li><strong data-translate="management">Management:</strong> <span data-translate="mellifera_management">Best in Langstroth hives; needs intensive care.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                     <p class="text-center text-gray-600 mt-8 text-sm" data-translate="wild_bees_note">Other species like Apis dorsata (Giant Bee) and Apis florae (Dwarf Bee) are important native pollinators but are typically not managed in hives for commercial honey production.</p>
+                </div>
+
+                <!-- Hive Management in Zones -->
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold text-green-900 text-center mb-8" data-translate="hive_management_title">Hive Management in Different Climatic Zones</h2>
+                    <div class="grid md:grid-cols-3 gap-8 text-center">
+                        <div>
+                            <i class="fas fa-sun text-4xl text-amber-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="arid_zone_title">Arid / Semi-arid</h3>
+                            <p class="mt-2 text-gray-600" data-translate="arid_zone_desc">Orient hives E-W under shade, provide water trays, and ensure proper ventilation to prevent overheating.</p>
+                        </div>
+                         <div>
+                            <i class="fas fa-cloud-rain text-4xl text-amber-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="humid_zone_title">Hot-Humid</h3>
+                            <p class="mt-2 text-gray-600" data-translate="humid_zone_desc">Elevate hives on stands for airflow, use screened bottom boards, and control moisture to prevent dampness.</p>
+                        </div>
+                         <div>
+                            <i class="fas fa-snowflake text-4xl text-amber-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="cool_zone_title">Cool / Temperate</h3>
+                            <p class="mt-2 text-gray-600" data-translate="cool_zone_desc">Wrap hives with insulation in winter, orient south-facing for warmth, and use windbreaks.</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Common Diseases Section -->
+                <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                    <div class="info-card-bg" style="background-image: url('debee.png')"></div>
+                    <h3 class="text-4xl font-bold" data-translate="diseases_title">Common Bee Diseases & Treatments</h3>
+                    <div class="info-card-details border-t text-left">
+                         <div class="overflow-x-auto">
+                            <table class="table-auto w-full text-sm">
+                                <thead>
+                                    <tr>
+                                        <th data-translate="disease_th">Disease</th>
+                                        <th data-translate="signs_th">Signs</th>
+                                        <th data-translate="treatment_th">Treatment & Control</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td data-translate="varroosis">Varroosis</td>
+                                        <td data-translate="varroosis_signs">Deformed wings, reduced stores</td>
+                                        <td data-translate="varroosis_treat">Organic acids, drone brood removal</td>
+                                    </tr>
+                                    <tr>
+                                        <td data-translate="afb">American Foulbrood (AFB)</td>
+                                        <td data-translate="afb_signs">Sunken brood, "ropey" larvae</td>
+                                        <td data-translate="afb_treat">Burn infected frames, antibiotics</td>
+                                    </tr>
+                                    <tr>
+                                        <td data-translate="efb">European Foulbrood (EFB)</td>
+                                        <td data-translate="efb_signs">Twisted larvae, uneven brood</td>
+                                        <td data-translate="efb_treat">Remove infected combs, antibiotics</td>
+                                    </tr>
+                                    <tr>
+                                        <td data-translate="nosemosis">Nosemosis</td>
+                                        <td data-translate="nosemosis_signs">Dysentery, reduced foraging</td>
+                                        <td data-translate="nosemosis_treat">Fumagillin, ensure dry hive</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+
+                // Apiculture Page Specific
+                apiculture_title: { English: "Apiculture", اردو: "شہد کی مکھیوں کی پرورش", हिन्दी: "मधुमक्खी पालन", ಕನ್ನಡ: "ಜೇನುಸಾಕಣೆ", मराठी: "मधुमक्षिका पालन" },
+                apiculture_subtitle: { English: "A comprehensive guide to beekeeping under varied Indian conditions.", اردو: "مختلف ہندوستانی حالات میں شہد کی مکھیوں کی پرورش کے لیے ایک جامع رہنما۔", हिन्दी: "विभिन्न भारतीय परिस्थितियों में मधुमक्खी पालन के लिए एक व्यापक गाइड।", ಕನ್ನಡ: "ವಿವಿಧ ಭಾರತೀಯ ಪರಿಸ್ಥಿತಿಗಳಲ್ಲಿ ಜೇನುಸಾಕಣೆಗಾಗಿ ಒಂದು ಸಮಗ್ರ ಮಾರ್ಗದರ್ಶಿ.", मराठी: "विविध भारतीय परिस्थितीत मधमाशी पालनासाठी एक व्यापक मार्गदर्शक." },
+                species_guide_title: { English: "Major Bee Species for Indian Apiculture", اردو: "ہندوستانی شہد کی مکھیوں کی پرورش کے لیے اہم شہد کی مکھیوں کی اقسام", हिन्दी: "भारतीय मधुमक्खी पालन के लिए प्रमुख मधुमक्खी प्रजातियां", ಕನ್ನಡ: "ಭಾರತೀಯ ಜೇನುಸಾಕಣೆಗಾಗಿ ಪ್ರಮುಖ ಜೇನುನೊಣ ಪ್ರಭೇದಗಳು", मराठी: "भारतीय मधुमक्षिका पालनासाठी प्रमुख मधमाशी प्रजाती" },
+                hover_prompt_main: { English: "Click here to check the full video of Apiculture.", اردو: "شہد کی مکھیوں کی پرورش کی مکمل ویڈیو دیکھنے کے لیے یہاں کلک کریں۔", हिन्दी: "मधुमक्खी पालन का पूरा वीडियो देखने के लिए यहाँ क्लिक करें।", ಕನ್ನಡ: "ಜೇನುಕೃಷಿಯ ಸಂಪೂರ್ಣ ವೀಡಿಯೊ ವೀಕ್ಷಿಸಲು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ.", मराठी: "मधुमक्षिका पालनाचा संपूर्ण व्हिडिओ पाहण्यासाठी येथे क्लिक करा." },
+                cerana_title: { English: "Apis cerana indica", اردو: "اپس سیرانا انڈیکا", हिन्दी: "एपिस सेराना इंडिका", ಕನ್ನಡ: "ಏಪಿಸ್ ಸೆರಾನಾ ಇಂಡಿಕಾ", मराठी: "एपिस सेराना इंडिका" },
+                cerana_subtitle: { English: "(Indian Hive Bee)", اردو: "(ہندوستانی چھتے کی مکھی)", हिन्दी: "(भारतीय छत्ता मधुमक्खी)", ಕನ್ನಡ: "(ಭಾರತೀಯ ಜೇನುಗೂಡು ಜೇನುನೊಣ)", मराठी: "(भारतीय पोळ्यातील मधमाशी)" },
+                native_status: { English: "Native/Exotic:", اردو: "مقامی/غیر ملکی:", हिन्दी: "देशी/विदेशी:", ಕನ್ನಡ: "ಸ್ಥಳೀಯ/ವಿದೇಶಿ:", मराठी: "देशी/विदेशी:" },
+                native: { English: "Native", اردو: "مقامی", हिन्दी: "देशी", ಕನ್ನಡ: "ಸ್ಥಳೀಯ", मराठी: "देशी" },
+                exotic: { English: "Exotic", اردو: "غیر ملکی", हिन्दी: "विदेशी", ಕನ್ನಡ: "ವಿದೇಶಿ", मराठी: "विदेशी" },
+                colony_size: { English: "Colony Size:", اردو: "کالونی کا سائز:", हिन्दी: "कॉलोनी का आकार:", ಕನ್ನಡ: "ವಸಾಹತು ಗಾತ್ರ:", मराठी: "कॉलनीचा आकार:" },
+                honey_yield: { English: "Honey Yield:", اردو: "شہد کی پیداوار:", हिन्दी: "शहद की उपज:", ಕನ್ನಡ: "ಜೇನುತುಪ್ಪದ ಇಳುವರಿ:", मराठी: "मधाचे उत्पादन:" },
+                disease_res: { English: "Disease Resistance:", اردو: "بیماریوں کے خلاف مزاحمت:", हिन्दी: "रोग प्रतिरोध:", ಕನ್ನಡ: "ರೋಗ ನಿರೋಧಕತೆ:", मराठी: "रोग प्रतिकारशक्ती:" },
+                cerana_disease: { English: "Good tolerance to Nosema & Varroa.", اردو: "نوسیما اور ورروا کے خلاف اچھی برداشت۔", हिन्दी: "नोसेमा और वरroa के प्रति अच्छी सहनशीलता।", ಕನ್ನಡ: "ನೋಸೆಮಾ ಮತ್ತು ವರೋವಾಗೆ ಉತ್ತಮ ಸಹಿಷ್ಣುತೆ.", मराठी: "नोसेमा आणि व्हॅरोआला चांगली सहनशीलता." },
+                management: { English: "Management:", اردو: "انتظام:", हिन्दी: "प्रबंधन:", ಕನ್ನಡ: "ನಿರ್ವಹಣೆ:", मराठी: "व्यवस्थापन:" },
+                cerana_management: { English: "Suitable for smallholders and low-input hives.", اردو: "چھوٹے کسانوں اور کم لاگت والے چھتوں کے لیے موزوں۔", हिन्दी: "छोटे किसानों और कम-इनपुट वाले छत्तों के लिए उपयुक्त।", ಕನ್ನಡ: "ಸಣ್ಣ ಹಿಡುವಳಿದಾರರಿಗೆ ಮತ್ತು ಕಡಿಮೆ-ಇನ್‌ಪುಟ್ ಜೇನುಗೂಡುಗಳಿಗೆ ಸೂಕ್ತವಾಗಿದೆ.", मराठी: "लहान शेतकऱ्यांसाठी आणि कमी-इनपुट पोळ्यांसाठी योग्य." },
+                mellifera_title: { English: "Apis mellifera", اردو: "اپس میلیفیرا", हिन्दी: "एपिस मेलिफेरा", ಕನ್ನಡ: "ಏಪಿಸ್ ಮೆಲ್ಲಿಫೆರಾ", मराठी: "एपिस मेलिफेरा" },
+                mellifera_subtitle: { English: "(European Honey Bee)", اردو: "(یورپی شہد کی مکھی)", हिन्दी: "(यूरोपीय शहद मधुमक्खी)", ಕನ್ನಡ: "(ಯುರೋಪಿಯನ್ ಜೇನುನೊಣ)", मराठी: "(युरोपियन मधमाशी)" },
+                mellifera_disease: { English: "Higher risk of Varroa & Foulbrood.", اردو: "ورروا اور فاؤل بروڈ کا زیادہ خطرہ۔", हिन्दी: "वरroa और फाउलब्रूड का अधिक खतरा।", ಕನ್ನಡ: "ವರೋವಾ ಮತ್ತು ಫೌಲ್‌ಬ್ರೂಡ್‌ನ ಹೆಚ್ಚಿನ ಅಪಾಯ.", मराठी: "व्हॅरोआ आणि फाउलब्रूडचा जास्त धोका." },
+                mellifera_management: { English: "Best in Langstroth hives; needs intensive care.", اردو: "لینگسٹروتھ چھتوں میں بہترین؛ گہری دیکھ بھال کی ضرورت ہے۔", हिन्दी: "लैंगस्ट्रॉथ हाइव्स में सर्वश्रेष्ठ; गहन देखभाल की आवश्यकता है।", ಕನ್ನಡ: "ಲ್ಯಾಂಗ್‌ಸ್ಟ್ರಾತ್ ಜೇನುಗೂಡುಗಳಲ್ಲಿ ಉತ್ತಮ; ತೀವ್ರ ಆರೈಕೆಯ ಅಗತ್ಯವಿದೆ.", मराठी: "लँगस्ट्रॉथ पोळ्यांमध्ये सर्वोत्तम; गहन काळजीची गरज आहे." },
+                wild_bees_note: { English: "Other species like Apis dorsata (Giant Bee) and Apis florae (Dwarf Bee) are important native pollinators but are typically not managed in hives for commercial honey production.", اردو: "دیگر اقسام جیسے اپس ڈورساٹا (دیو مکھی) اور اپس فلوری (بونی مکھی) اہم مقامی پولینیٹر ہیں لیکن عام طور پر تجارتی شہد کی پیداوار کے لیے چھتوں میں ان کا انتظام نہیں کیا جاتا۔", हिन्दी: "अन्य प्रजातियां जैसे एपिस डोरसाटा (विशालकाय मधुमक्खी) और एपिस फ्लोरिया (बौनी मधुमक्खी) महत्वपूर्ण देशी परागणकर्ता हैं लेकिन आमतौर पर تجارتی شہد उत्पादन के लिए छत्तों में प्रबंधित नहीं की जाती हैं।", ಕನ್ನಡ: "ಇತರ ಪ್ರಭೇದಗಳಾದ ಏಪಿಸ್ ಡಾರ್ಸಟಾ (ದೈತ್ಯ ಜೇನುನೊಣ) ಮತ್ತು ಏಪಿಸ್ ಫ್ಲೋರಿಯಾ (ಕುಬ್ಜ ಜೇನುನೊಣ) ಪ್ರಮುಖ ಸ್ಥಳೀಯ ಪರಾಗಸ್ಪರ್ಶಕಗಳಾಗಿವೆ ಆದರೆ ಸಾಮಾನ್ಯವಾಗಿ ವಾಣಿಜ್ಯ ಜೇನುತುಪ್ಪ ಉತ್ಪಾದನೆಗಾಗಿ ಜೇನುಗೂಡುಗಳಲ್ಲಿ ನಿರ್ವಹಿಸಲಾಗುವುದಿಲ್ಲ.", मराठी: "एपिस डॉर्साटा (जायंट बी) आणि एपिस फ्लोरिया (ड्वार्फ बी) सारख्या इतर प्रजाती महत्त्वाचे देशी परागकण आहेत परंतु सामान्यतः व्यावसायिक मध उत्पादनासाठी पोळ्यांमध्ये व्यवस्थापित केल्या जात नाहीत." },
+                hive_management_title: { English: "Hive Management in Different Climatic Zones", اردو: "مختلف موسمی زونز میں چھتے کا انتظام", हिन्दी: "विभिन्न जलवायु क्षेत्रों में छत्ता प्रबंधन", ಕನ್ನಡ: "ವಿವಿಧ ಹವಾಮಾನ ವಲಯಗಳಲ್ಲಿ ಜೇನುಗೂಡು ನಿರ್ವಹಣೆ", मराठी: "वेगवेगळ्या हवामान झोनमध्ये पोळ्यांचे व्यवस्थापन" },
+                arid_zone_title: { English: "Arid / Semi-arid", اردو: "خشک / نیم خشک", हिन्दी: "शुष्क / अर्ध-शुष्क", ಕನ್ನಡ: "ಶುಷ್ಕ / ಅರೆ-ಶುಷ್ಕ", मराठी: "शुष्क / अर्ध-शुष्क" },
+                arid_zone_desc: { English: "Orient hives E-W under shade, provide water trays, and ensure proper ventilation to prevent overheating.", اردو: "چھتوں کو سایہ کے نیچے مشرق-مغرب کی سمت رکھیں، پانی کی ٹرے فراہم کریں، اور زیادہ گرمی سے بچنے کے لیے مناسب وینٹیلیشن کو یقینی بنائیں۔", हिन्दी: "छत्तों को छाया के नीचे पूर्व-पश्चिम की ओर रखें, पानी की ट्रे प्रदान करें, और ज़्यादा गरम होने से बचाने के लिए उचित वेंटिलेशन सुनिश्चित करें।", ಕನ್ನಡ: "ಜೇನುಗೂಡುಗಳನ್ನು ನೆರಳಿನ ಕೆಳಗೆ ಪೂರ್ವ-ಪಶ್ಚಿಮಕ್ಕೆ ಇರಿಸಿ, ನೀರಿನ ಟ್ರೇಗಳನ್ನು ಒದಗಿಸಿ ಮತ್ತು ಅಧಿಕ ಬಿಸಿಯಾಗುವುದನ್ನು ತಡೆಯಲು ಸರಿಯಾದ ವಾತಾಯನವನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.", मराठी: "पोळ्यांना सावलीखाली पूर्व-पश्चिम दिशेने ठेवा, पाण्याची ट्रे द्या आणि जास्त गरम होण्यापासून बचाव करण्यासाठी योग्य वायुवीजन सुनिश्चित करा." },
+                humid_zone_title: { English: "Hot-Humid", اردو: "گرم مرطوب", हिन्दी: "गर्म-आर्द्र", ಕನ್ನಡ: "ಬಿಸಿ-ತೇವಾಂಶ", मराठी: "गरम-दमट" },
+                humid_zone_desc: { English: "Elevate hives on stands for airflow, use screened bottom boards, and control moisture to prevent dampness.", اردو: "ہوا کے بہاؤ کے لیے اسٹینڈز پر چھتے بلند کریں، اسکرین والے نیچے والے بورڈز کا استعمال کریں، اور نمی کو کنٹرول کریں۔", हिन्दी: "एयरफ्लो के लिए स्टैंड पर छत्ते उठाएं, स्क्रीन वाले बॉटम बोर्ड का उपयोग करें, और नमी को नियंत्रित करें।", ಕನ್ನಡ: "ಗಾಳಿಯ ಹರಿವಿಗಾಗಿ ಸ್ಟ್ಯಾಂಡ್‌ಗಳ ಮೇಲೆ ಜೇನುಗೂಡುಗಳನ್ನು ಎತ್ತರಿಸಿ, ಪರದೆಯ ಕೆಳಭಾಗದ ಬೋರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ ಮತ್ತು ತೇವವನ್ನು ನಿಯಂತ್ರಿಸಿ.", मराठी: "वायुप्रवाहासाठी स्टँड्सवर पोळ्या उंच करा, स्क्रीन केलेले तळ बोर्ड वापरा आणि ओलसरपणा नियंत्रित करा." },
+                cool_zone_title: { English: "Cool / Temperate", اردو: "ٹھنڈا / معتدل", हिन्दी: "शीतल / समशीतोष्ण", ಕನ್ನಡ: "ತಂಪು / ಸಮಶೀತೋಷ್ಣ", मराठी: "थंड / समशीतोष्ण" },
+                cool_zone_desc: { English: "Wrap hives with insulation in winter, orient south-facing for warmth, and use windbreaks.", اردو: "سردیوں میں موصلیت کے ساتھ چھتے لپیٹیں، گرمی کے لیے جنوب کا سامنا کریں، اور ونڈ بریک کا استعمال کریں۔", हिन्दी: "सर्दियों में इन्सुलेशन के साथ छत्ते लपेटें, गर्मी के लिए दक्षिण की ओर रखें, और विंडब्रेक का उपयोग करें।", ಕನ್ನಡ: "ಚಳಿಗಾಲದಲ್ಲಿ ನಿರೋಧನದೊಂದಿಗೆ ಜೇನುಗೂಡುಗಳನ್ನು ಕಟ್ಟಿಕೊಳ್ಳಿ, ಉಷ್ಣತೆಗಾಗಿ ದಕ್ಷಿಣಾಭಿಮುಖವಾಗಿ ಮತ್ತು ವಿಂಡ್‌ಬ್ರೇಕ್‌ಗಳನ್ನು ಬಳಸಿ.", मराठी: "हिवाळ्यात इन्सुलेशनसह पोळ्या गुंडाळा, उबदारपणासाठी दक्षिणाभिमुख ठेवा आणि विंडब्रेक्स वापरा." },
+                diseases_title: { English: "Common Bee Diseases & Treatments", اردو: "شہد کی مکھیوں کی عام بیماریاں اور علاج", हिन्दी: "आम मधुमक्खी रोग और उपचार", ಕನ್ನಡ: "ಸಾಮಾನ್ಯ ಜೇನುನೊಣ ರೋಗಗಳು ಮತ್ತು ಚಿಕಿತ್ಸೆಗಳು", मराठी: "सामान्य मधमाशी रोग आणि उपचार" },
+                disease_th: { English: "Disease", اردو: "بیماری", हिन्दी: "रोग", ಕನ್ನಡ: "ರೋಗ", मराठी: "रोग" },
+                signs_th: { English: "Signs", اردو: "علامات", हिन्दी: "संकेत", ಕನ್ನಡ: "ಚಿಹ್ನೆಗಳು", मराठी: "चिन्हे" },
+                treatment_th: { English: "Treatment & Control", اردو: "علاج اور کنٹرول", हिन्दी: "उपचार और नियंत्रण", ಕನ್ನಡ: "ಚಿಕಿತ್ಸೆ ಮತ್ತು ನಿಯಂತ್ರಣ", मराठी: "उपचार आणि नियंत्रण" },
+                varroosis: { English: "Varroosis", اردو: "ورروسس", हिन्दी: "वररोसिस", ಕನ್ನಡ: "ವರ್ರೋಸಿಸ್", मराठी: "व्हॅरोसिस" },
+                varroosis_signs: { English: "Deformed wings, reduced stores", اردو: "خراب پر، کم ذخائر", हिन्दी: "विकृत पंख, कम भंडार", ಕನ್ನಡ: "ವಿಕೃತ ರೆಕ್ಕೆಗಳು, ಕಡಿಮೆ ಸಂಗ್ರಹಗಳು", मराठी: "विकृत पंख, कमी साठा" },
+                varroosis_treat: { English: "Organic acids, drone brood removal", اردو: "نامیاتی تیزاب، ڈرون بروڈ کو ہٹانا", हिन्दी: "कार्बनिक अम्ल, ड्रोन ब्रूड को हटाना", ಕನ್ನಡ: "ಸಾವಯವ ಆಮ್ಲಗಳು, ಡ್ರೋನ್ બ્રૂડ ತೆಗೆಯುವಿಕೆ", मराठी: "सेंद्रिय ऍसिडस्, ड्रोन ब्रूड काढणे" },
+                afb: { English: "American Foulbrood (AFB)", اردو: "امریکن فاؤل بروڈ (اے ایف بی)", हिन्दी: "अमेरिकन फाउलब्रूड (एएफबी)", ಕನ್ನಡ: "ಅಮೇರಿಕನ್ ಫೌಲ್‌ಬ್ರೂಡ್ (ಎಎಫ್‌ಬಿ)", मराठी: "अमेरिकन फाउलब्रूड (एएफबी)" },
+                afb_signs: { English: "Sunken brood, \"ropey\" larvae", اردو: "ڈوبا ہوا بروڈ، \"رسیلے\" لاروا", हिन्दी: "धँसा हुआ ब्रूड, \"रस्सीदार\" लार्वा", ಕನ್ನಡ: "ಮುಳುಗಿದ બ્રૂડ, \"ಹಗ್ಗದಂತಹ\" ಲಾರ್ವಾಗಳು", मराठी: "बुडलेले ब्रूड, \"दोरीसारखे\" अळ्या" },
+                afb_treat: { English: "Burn infected frames, antibiotics", اردو: "متاثرہ فریم جلائیں، اینٹی بائیوٹکس", हिन्दी: "संक्रमित फ्रेम जलाएं, एंटीबायोटिक्स", ಕನ್ನಡ: "ಸೋಂಕಿತ ಫ್ರೇಮ್‌ಗಳನ್ನು ಸುಟ್ಟುಹಾಕಿ, ಪ್ರತಿಜೀವಕಗಳು", मराठी: "संक्रमित फ्रेम जाळा, प्रतिजैविके" },
+                efb: { English: "European Foulbrood (EFB)", اردو: "یورپی فاؤل بروڈ (ای ایف بی)", हिन्दी: "यूरोपीय फाउलब्रूड (ईएफबी)", ಕನ್ನಡ: "ಯುರೋಪಿಯನ್ ಫೌಲ್‌ಬ್ರೂಡ್ (ಇಎಫ್‌ಬಿ)", मराठी: "युरोपियन फाउलब्रूड (ईएफबी)" },
+                efb_signs: { English: "Twisted larvae, uneven brood", اردو: "مڑے ہوئے لاروا، ناہموار بروڈ", हिन्दी: "मुड़े हुए लार्वा, असमान ब्रूड", ಕನ್ನಡ: "ತಿರುಚಿದ ಲಾರ್ವಾಗಳು, ಅಸಮವಾದ બ્રૂડ", मराठी: "पिळलेल्या अळ्या, असमान ब्रूड" },
+                efb_treat: { English: "Remove infected combs, antibiotics", اردو: "متاثرہ کنگھی ہٹائیں، اینٹی بائیوٹکس", हिन्दी: "संक्रमित कंघी हटाएं, एंटीबायोटिक्स", ಕನ್ನಡ: "ಸೋಂಕಿತ ಬಾಚಣಿಗೆಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಪ್ರತಿಜೀವಕಗಳು", मराठी: "संक्रमित कंगवा काढा, प्रतिजैविके" },
+                nosemosis: { English: "Nosemosis", اردو: "نوسیموسس", हिन्दी: "नोसेमोसिस", ಕನ್ನಡ: "ನೊಸೆಮೊಸಿಸ್", मराठी: "नोसेमोसिस" },
+                nosemosis_signs: { English: "Dysentery, reduced foraging", اردو: "اسہال، کم چارہ", हिन्दी: "पेचिश, कम चारागाह", ಕನ್ನಡ: "ಭೇದಿ, ಕಡಿಮೆ ಮೇವು", मराठी: "अतिसार, कमी चारा" },
+                nosemosis_treat: { English: "Fumagillin, ensure dry hive", اردو: "فیوماجلن، خشک چھتے کو یقینی بنائیں", हिन्दी: "फ्यूमागिलिन, सूखा छत्ता सुनिश्चित करें", ಕನ್ನಡ: "ಫ್ಯೂಮಗಿಲಿನ್, ಒಣ ಜೇನುಗೂಡನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ", मराठी: "फ्युमागिलिन, कोरडे पोळे सुनिश्चित करा" },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                localStorage.setItem('farmEaseLang', lang);
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+

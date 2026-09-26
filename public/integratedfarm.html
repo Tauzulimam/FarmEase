@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Integrated Farming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Interactive System Card */
+        .system-card {
+             transition: all 0.3s ease;
+             cursor: pointer;
+             position: relative;
+             overflow: hidden;
+             display: flex;
+             align-items: flex-end;
+             padding: 2rem;
+             min-height: 350px;
+        }
+        .system-card:hover {
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+            transform: translateY(-5px);
+        }
+        .system-card-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.4s ease;
+        }
+        .system-card:hover .system-card-bg {
+            transform: scale(1.05);
+        }
+        .system-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+        }
+        .system-card-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 6. Full Screen Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: white;
+            color: #333;
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.4s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.4);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="मराठी">मराठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="relative bg-cover bg-center py-20">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('intiback.png'); z-index: -1;"></div>
+            <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white" data-translate="if_title">Integrated Farming Systems</h1>
+                <p class="mt-4 text-gray-200 max-w-2xl mx-auto" data-translate="if_subtitle">Discover synergistic farming models that maximize productivity and profitability by turning waste into a resource.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-green-900 text-center mb-2" data-translate="models_title">Explore Farming Models</h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="click_prompt_main">Click on a card to explore the system in detail.</p>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Poultry-Fish Card -->
+                    <a href="#" class="system-card rounded-lg text-white" data-system="poultry-fish">
+                        <div class="system-card-bg" style="background-image: url('pif.jpg');"></div>
+                        <div class="system-card-content">
+                            <h3 class="text-3xl font-bold" data-translate="poultry_fish_title">Poultry-Fish System</h3>
+                        </div>
+                    </a>
+                     <!-- Cattle-Fish Card -->
+                    <a href="#" class="system-card rounded-lg text-white" data-system="cattle-fish">
+                        <div class="system-card-bg" style="background-image: url('cint.jpg');"></div>
+                        <div class="system-card-content">
+                            <h3 class="text-3xl font-bold" data-translate="cattle_fish_title">Cattle-Fish System</h3>
+                        </div>
+                    </a>
+                     <!-- Pig-Fish Card -->
+                    <a href="#" class="system-card rounded-lg text-white" data-system="pig-fish">
+                        <div class="system-card-bg" style="background-image: url('pigf.png');"></div>
+                        <div class="system-card-content">
+                            <h3 class="text-3xl font-bold" data-translate="pig_fish_title">Pig-Fish System</h3>
+                        </div>
+                    </a>
+                     <!-- Duck-Fish Card -->
+                    <a href="#" class="system-card rounded-lg text-white" data-system="duck-fish">
+                        <div class="system-card-bg" style="background-image: url('dfint.jpg');"></div>
+                        <div class="system-card-content">
+                            <h3 class="text-3xl font-bold" data-translate="duck_fish_title">Duck-Fish System</h3>
+                        </div>
+                    </a>
+                     <!-- Goat-Fish Card -->
+                    <a href="#" class="system-card rounded-lg text-white" data-system="goat-fish">
+                        <div class="system-card-bg" style="background-image: url('ginf.jpg');"></div>
+                        <div class="system-card-content">
+                            <h3 class="text-3xl font-bold" data-translate="goat_fish_title">Goat-Fish System</h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+     <!-- Full-Screen Modal -->
+    <div id="modal-overlay" class="modal-overlay">
+        <button id="modal-close" class="modal-close"><i class="fas fa-times text-2xl"></i></button>
+        <div id="modal-content" class="modal-content">
+            <!-- Content will be injected by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Hidden Content for Modals -->
+    <div class="hidden">
+        <div id="poultry-fish-content">
+            <h2 class="text-3xl font-bold text-green-900 mb-4" data-translate="poultry_fish_title">Poultry-Fish System</h2>
+            <div class="space-y-4 text-gray-700">
+                <div><strong data-translate="concept">Concept:</strong> <span data-translate="poultry_fish_concept">Poultry droppings directly fertilize the fish pond, promoting plankton growth which serves as a natural food source for fish.</span></div>
+                <div><strong data-translate="poultry_comp">Poultry Component:</strong> <span data-translate="poultry_fish_poultry">500-600 broiler chickens (e.g., Vencobb 400) can be housed above or adjacent to a 1-hectare pond. Housing should be well-ventilated and waste directed into the pond.</span></div>
+                <div><strong data-translate="fish_comp">Fish Component:</strong> <span data-translate="poultry_fish_fish">Polyculture of Indian Major Carps like Catla (surface feeder), Rohu (column feeder), and Mrigal (bottom feeder) is ideal to utilize all pond niches.</span></div>
+                <div><strong data-translate="benefits">Synergistic Benefits:</strong> <span data-translate="poultry_fish_benefits">Reduces fish feed cost by up to 60%, ensures efficient waste recycling, and provides diversified income from both eggs/meat and fish.</span></div>
+                <div class="mt-4 p-4 bg-green-50 rounded-lg"><strong data-translate="net_profit">Estimated Net Profit:</strong> <span data-translate="poultry_fish_profit">Approximately ₹2.5 - ₹3.5 Lakhs per year from a 1-hectare system, representing a 40-60% increase over standalone farming.</span></div>
+                <div class="mt-4"><strong data-translate="video_reco">Video Recommendation:</strong> <a href="https://youtu.be/slbD69kjba8?si=meeI24cNMHWD1APX" class="text-amber-600 hover:underline font-semibold" data-translate="poultry_fish_video">Watch Poultry-Fish Farming Video</a></div>
+            </div>
+        </div>
+        <div id="cattle-fish-content">
+            <h2 class="text-3xl font-bold text-green-900 mb-4" data-translate="cattle_fish_title">Cattle-Fish System</h2>
+            <div class="space-y-4 text-gray-700">
+                 <div><strong data-translate="concept">Concept:</strong> <span data-translate="cattle_fish_concept">Cow dung is used as a primary organic fertilizer for the fish pond. The slurry from a biogas plant using the dung is even more effective.</span></div>
+                <div><strong data-translate="cattle_comp">Cattle Component:</strong> <span data-translate="cattle_fish_cattle">5-6 dairy cattle can provide enough manure for a 1-hectare pond. Shed washings and slurry can be channeled into the pond.</span></div>
+                <div><strong data-translate="fish_comp">Fish Component:</strong> <span data-translate="cattle_fish_fish">Composite fish culture with 3-6 species of carps is recommended. Regular liming is required to maintain water pH.</span></div>
+                <div><strong data-translate="benefits">Synergistic Benefits:</strong> <span data-translate="cattle_fish_benefits">Provides income from milk and fish. Biogas production from dung saves energy costs. Pond slurry can be used to fertilize adjacent fodder crops.</span></div>
+                <div class="mt-4 p-4 bg-green-50 rounded-lg"><strong data-translate="net_profit">Estimated Net Profit:</strong> <span data-translate="cattle_fish_profit">Around ₹3 - ₹4 Lakhs annually from the combined enterprise, boosting farm profitability by 30-50%.</span></div>
+                 <div class="mt-4"><strong data-translate="video_reco">Video Recommendation:</strong> <a href="https://youtu.be/XNMr9BITN2s?si=_GhIukFOtA-ddEt8" class="text-amber-600 hover:underline font-semibold" data-translate="cattle_fish_video">Watch Cattle-Fish Farming Video</a></div>
+            </div>
+        </div>
+         <div id="pig-fish-content">
+            <h2 class="text-3xl font-bold text-green-900 mb-4" data-translate="pig_fish_title">Pig-Fish System</h2>
+            <div class="space-y-4 text-gray-700">
+                <div><strong data-translate="concept">Concept:</strong> <span data-translate="pig_fish_concept">Pig excreta is an excellent fertilizer. Pigs are housed on the pond embankment, and the waste is directly drained into the pond.</span></div>
+                <div><strong data-translate="pig_comp">Pig Component:</strong> <span data-translate="pig_fish_pig">30-40 pigs can be integrated with a 1-hectare pond. Pig sties should be constructed with a slope towards the pond.</span></div>
+                <div><strong data-translate="fish_comp">Fish Component:</strong> <span data-translate="pig_fish_fish">Air-breathing fish like Catfish (Magur, Singhi) are often preferred as pig waste can lower dissolved oxygen levels.</span></div>
+                <div><strong data-translate="benefits">Synergistic Benefits:</strong> <span data-translate="pig_fish_benefits">Extremely high productivity. Reduces feed cost for both pigs (who can eat aquatic weeds) and fish. Pigs attain market weight faster.</span></div>
+                <div class="mt-4 p-4 bg-green-50 rounded-lg"><strong data-translate="net_profit">Estimated Net Profit:</strong> <span data-translate="pig_fish_profit">Can be highly profitable, with estimates ranging from ₹3 - ₹5 Lakhs per year from a 1-hectare system due to the high value of pork.</span></div>
+                 <div class="mt-4"><strong data-translate="video_reco">Video Recommendation:</strong> <a href="https://youtu.be/_ETzRIqkz9o?si=2zRyVWHP3PXtNI2a" class="text-amber-600 hover:underline font-semibold" data-translate="pig_fish_video">Watch Pig-Fish Farming Video</a></div>
+            </div>
+        </div>
+        <div id="duck-fish-content">
+            <h2 class="text-3xl font-bold text-green-900 mb-4" data-translate="duck_fish_title">Duck-Fish System</h2>
+            <div class="space-y-4 text-gray-700">
+                 <div><strong data-translate="concept">Concept:</strong> <span data-translate="duck_fish_concept">Ducks live on the pond surface. Their droppings fertilize the water, and they control unwanted insects and weeds while aerating the water with their movement.</span></div>
+                <div><strong data-translate="duck_comp">Duck Component:</strong> <span data-translate="duck_fish_duck">200-300 ducks can be raised per hectare of water area. A simple, low-cost shelter on the embankment is sufficient.</span></div>
+                <div><strong data-translate="fish_comp">Fish Component:</strong> <span data-translate="duck_fish_fish">A polyculture of carps is ideal. Ducks eat predatory insects and snails, which benefits the fish.</span></div>
+                <div><strong data-translate="benefits">Synergistic Benefits:</strong> <span data-translate="duck_fish_benefits">No additional feed required for ducks as they feed on pond organisms. Provides income from duck eggs, meat, and fish simultaneously.</span></div>
+                <div class="mt-4 p-4 bg-green-50 rounded-lg"><strong data-translate="net_profit">Estimated Net Profit:</strong> <span data-translate="duck_fish_profit">A well-managed system can yield a net profit of ₹2 - ₹3 Lakhs per hectare annually.</span></div>
+                 <div class="mt-4"><strong data-translate="video_reco">Video Recommendation:</strong> <a href="https://youtu.be/tDeBqm19Sxw?si=VCSC8-KB7yKRkpqU" class="text-amber-600 hover:underline font-semibold" data-translate="duck_fish_video">Watch Duck-Fish Farming Video</a></div>
+            </div>
+        </div>
+        <div id="goat-fish-content">
+            <h2 class="text-3xl font-bold text-green-900 mb-4" data-translate="goat_fish_title">Goat-Fish System</h2>
+            <div class="space-y-4 text-gray-700">
+                 <div><strong data-translate="concept">Concept:</strong> <span data-translate="goat_fish_concept">Similar to cattle integration, goat manure is used as organic fertilizer for the fish pond. This system is ideal for semi-arid regions where goat rearing is common.</span></div>
+                <div><strong data-translate="goat_comp">Goat Component:</strong> <span data-translate="goat_fish_goat">A unit of 20-30 goats can support a 0.5 to 1-hectare pond. Goat sheds are built on embankments with channels for waste collection.</span></div>
+                <div><strong data-translate="fish_comp">Fish Component:</strong> <span data-translate="goat_fish_fish">A polyculture of carps is suitable. Goat manure is rich in nutrients, promoting excellent plankton blooms.</span></div>
+                <div><strong data-translate="benefits">Synergistic Benefits:</strong> <span data-translate="goat_fish_benefits">High profitability from goat meat and milk, supplemented by fish sales. Excellent for areas with limited grazing.</span></div>
+                <div class="mt-4 p-4 bg-green-50 rounded-lg"><strong data-translate="net_profit">Estimated Net Profit:</strong> <span data-translate="goat_fish_profit">Given the high profit margin of goat farming, this integrated system can yield net profits upwards of ₹3 - ₹4.5 Lakhs per year.</span></div>
+                 <div class="mt-4"><strong data-translate="video_reco">Video Recommendation:</strong> <a href="https://youtu.be/QKDiUQNPU00?si=uHfKU0Tb5wCRS2uS" class="text-amber-600 hover:underline font-semibold" data-translate="goat_fish_video">Watch Goat-Fish Farming Video</a></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "मुखಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+
+                // Integrated Farming Page Specific
+                if_title: { English: "Integrated Farming Systems", اردو: "مربوط کاشتکاری کے نظام", हिन्दी: "एकीकृत कृषि प्रणालियाँ", ಕನ್ನಡ: "ಸಮಗ್ರ ಕೃಷಿ ವ್ಯವಸ್ಥೆಗಳು", मराठी: "एकात्मिक शेती प्रणाली" },
+                if_subtitle: { English: "Discover synergistic farming models that maximize productivity and profitability by turning waste into a resource.", اردو: "فضلہ کو وسائل میں تبدیل کرکے پیداواریت اور منافع کو زیادہ سے زیادہ کرنے والے ہم آہنگ کاشتکاری ماڈل دریافت کریں۔", हिन्दी: "अपशिष्ट को संसाधन में बदलकर उत्पादकता और लाभप्रदता को अधिकतम करने वाले सहक्रियात्मक कृषि मॉडल खोजें।", ಕನ್ನಡ: "ತ್ಯಾಜ್ಯವನ್ನು ಸಂಪನ್ಮೂಲವನ್ನಾಗಿ ಪರಿವರ್ತಿಸುವ ಮೂಲಕ ಉತ್ಪಾದಕತೆ ಮತ್ತು ಲಾಭದಾಯಕತೆಯನ್ನು ಹೆಚ್ಚಿಸುವ ಸಿನರ್ಜಿಸ್ಟಿಕ್ ಕೃಷಿ ಮಾದರಿಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.", मराठी: "कचऱ्याचे संसाधनात रूपांतर करून उत्पादकता आणि नफा वाढवणारे synergistic शेती मॉडेल शोधा." },
+                models_title: { English: "Explore Farming Models", اردو: "کاشتکاری کے ماڈل دریافت کریں۔", हिन्दी: "कृषि मॉडल खोजें", ಕನ್ನಡ: "ಕೃಷಿ ಮಾದರಿಗಳನ್ನು ಅನ್ವೇಷಿಸಿ", मराठी: "शेती मॉडेल एक्सप्लोर करा" },
+                click_prompt_main: { English: "Click on a card to explore the system in detail.", اردو: "نظام کو تفصیل سے دریافت کرنے کے لیے کارڈ پر کلک کریں۔", हिन्दी: "सिस्टम को विस्तार से जानने के लिए एक कार्ड पर क्लिक करें।", ಕನ್ನಡ: "ವ್ಯವಸ್ಥೆಯನ್ನು ವಿವರವಾಗಿ ಅನ್ವೇಷಿಸಲು ಕಾರ್ಡ್ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ.", मराठी: "प्रणाली तपशीलवार एक्सप्लोर करण्यासाठी कार्डवर क्लिक करा." },
+                poultry_fish_title: { English: "Poultry-Fish System", اردو: "پولٹری-مچھلی کا نظام", हिन्दी: "मुर्गी-मछली प्रणाली", ಕನ್ನಡ: "ಕೋಳಿ-ಮೀನು ವ್ಯವಸ್ಥೆ", मराठी: "कुक्कुट-मत्स्य प्रणाली" },
+                cattle_fish_title: { English: "Cattle-Fish System", اردو: "مویشی-مچھلی کا نظام", हिन्दी: "मवेशी-मछली प्रणाली", ಕನ್ನಡ: "ಜಾನುವಾರು-ಮೀನು ವ್ಯವಸ್ಥೆ", मराठी: "पशु-मत्स्य प्रणाली" },
+                pig_fish_title: { English: "Pig-Fish System", اردو: "سور-مچھلی کا نظام", हिन्दी: "सुअर-मछली प्रणाली", ಕನ್ನಡ: "ಹಂದಿ-ಮೀನು ವ್ಯವಸ್ಥೆ", मराठी: "डुक्कर-मत्स्य प्रणाली" },
+                duck_fish_title: { English: "Duck-Fish System", اردو: "بطخ-مچھلی کا نظام", हिन्दी: "बत्तख-मछली प्रणाली", ಕನ್ನಡ: "ಬಾತುಕೋಳಿ-ಮೀನು ವ್ಯವಸ್ಥೆ", मराठी: "बदक-मत्स्य प्रणाली" },
+                goat_fish_title: { English: "Goat-Fish System", اردو: "بکری-مچھلی کا نظام", हिन्दी: "बकरी-मछली प्रणाली", ಕನ್ನಡ: "ಮೇಕೆ-ಮೀನು ವ್ಯವಸ್ಥೆ", मराठी: "शेळी-मत्स्य प्रणाली" },
+                concept: { English: "Concept:", اردو: "تصور:", हिन्दी: "अवधारणा:", ಕನ್ನಡ: "ಪರಿಕಲ್ಪನೆ:", मराठी: "संकल्पना:" },
+                poultry_comp: { English: "Poultry Component:", اردو: "پولٹری کا جزو:", हिन्दी: "मुर्गी घटक:", ಕನ್ನಡ: "ಕೋಳಿ ಘಟಕ:", मराठी: "कुक्कुटपालन घटक:" },
+                cattle_comp: { English: "Cattle Component:", اردو: "مویشی کا جزو:", हिन्दी: "मवेशी घटक:", ಕನ್ನಡ: "ಜಾನುವಾರು ಘಟಕ:", मराठी: "पशुधन घटक:" },
+                pig_comp: { English: "Pig Component:", اردو: "سور کا جزو:", हिन्दी: "सुअर घटक:", ಕನ್ನಡ: "ಹಂದಿ ಘಟಕ:", मराठी: "डुक्कर घटक:" },
+                duck_comp: { English: "Duck Component:", اردو: "بطخ کا جزو:", हिन्दी: "बत्तख घटक:", ಕನ್ನಡ: "ಬಾತುಕೋಳಿ ಘಟಕ:", मराठी: "बदक घटक:" },
+                goat_comp: { English: "Goat Component:", اردو: "بکری کا جزو:", हिन्दी: "बकरी घटक:", ಕನ್ನಡ: "ಮೇಕೆ ಘಟಕ:", मराठी: "शेळी घटक:" },
+                fish_comp: { English: "Fish Component:", اردو: "مچھلی کا جزو:", हिन्दी: "मछली घटक:", ಕನ್ನಡ: "ಮೀನು ಘಟಕ:", मराठी: "मत्स्य घटक:" },
+                benefits: { English: "Synergistic Benefits:", اردو: "ہم آہنگی کے فوائد:", हिन्दी: "सहक्रियात्मक लाभ:", ಕನ್ನಡ: "ಸಿನರ್ಜಿಸ್ಟಿಕ್ ಪ್ರಯೋಜನಗಳು:", मराठी: "synergistic फायदे:" },
+                net_profit: { English: "Estimated Net Profit:", اردو: "تخمینہ شدہ خالص منافع:", हिन्दी: "अनुमानित शुद्ध लाभ:", ಕನ್ನಡ: "ಅಂದಾಜು ನಿವ್ವಳ ಲಾಭ:", मराठी: "अंदाजित निव्वळ नफा:" },
+                video_reco: { English: "Video Recommendation:", اردو: "ویڈیو کی سفارش:", हिन्दी: "वीडियो सिफ़ारिश:", ಕನ್ನಡ: "ವೀಡಿಯೊ ಶಿಫಾರಸು:", मराठी: "व्हिडिओ शिफारस:" },
+                poultry_fish_concept: { English: "Poultry droppings directly fertilize the fish pond, promoting plankton growth which serves as a natural food source for fish.", اردو: "پولٹری کی بیٹھیں براہ راست مچھلی کے تالاب کو کھاد دیتی ہیں، جس سے پلاکٹن کی نشوونما کو فروغ ملتا ہے جو مچھلی کے لیے قدرتی خوراک کا ذریعہ ہے۔", हिन्दी: "मुर्गी की बीट सीधे मछली तालाब को निषेचित करती है, प्लैंकटन के विकास को बढ़ावा देती है जो मछली के लिए प्राकृतिक भोजन स्रोत के रूप में कार्य करता है।", ಕನ್ನಡ: "ಕೋಳಿ ಹಿಕ್ಕೆಗಳು ನೇರವಾಗಿ ಮೀನು ಕೊಳವನ್ನು ಫಲವತ್ತಾಗಿಸುತ್ತದೆ, ಇದು ಮೀನುಗಳಿಗೆ ನೈಸರ್ಗಿಕ ಆಹಾರ ಮೂಲವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಪ್ಲ್ಯಾಂಕ್ಟನ್ ಬೆಳವಣಿಗೆಯನ್ನು ಉತ್ತೇಜಿಸುತ್ತದೆ.", मराठी: "कोंबडीची विष्ठा थेट माशांच्या तलावाला खत घालते, ज्यामुळे प्लँक्टनच्या वाढीला चालना मिळते जे माशांसाठी नैसर्गिक अन्न स्रोत म्हणून काम करते." },
+                poultry_fish_poultry: { English: "500-600 broiler chickens (e.g., Vencobb 400) can be housed above or adjacent to a 1-hectare pond.", اردو: "500-600 برائلر مرغیوں کو 1 ہیکٹر کے تالاب کے اوپر یا اس سے متصل رکھا جا سکتا ہے۔", हिन्दी: "500-600 ब्रायलर मुर्गियों (जैसे, वेनकॉब 400) को 1 हेक्टेयर के तालाब के ऊपर या बगल में रखा जा सकता है।", ಕನ್ನಡ: "500-600 ಬ್ರೈಲರ್ ಕೋಳಿಗಳನ್ನು (ಉದಾ., ವೆಂಕಾಬ್ 400) 1-ಹೆಕ್ಟೇರ್ ಕೊಳದ ಮೇಲೆ ಅಥವಾ ಪಕ್ಕದಲ್ಲಿ ಇರಿಸಬಹುದು.", मराठी: "500-600 ब्रॉयलर कोंबड्या (उदा. व्हेनकॉब 400) 1-हेक्टर तलावाच्या वर किंवा जवळ ठेवता येतात." },
+                poultry_fish_fish: { English: "Polyculture of Indian Major Carps like Catla, Rohu, and Mrigal is ideal.", اردو: "ہندوستانی بڑی کارپ مچھلیوں جیسے کتلا، روہو اور مریگل کی مخلوط کاشت مثالی ہے۔", हिन्दी: "कतला, रोहू और मृगल जैसी भारतीय मेजर कार्प्स की पॉलीकल्चर आदर्श है।", ಕನ್ನಡ: "ಕಟ್ಲಾ, ರೋಹು, ಮತ್ತು ಮ್ರಿಗಲ್ ನಂತಹ ಭಾರತೀಯ ಪ್ರಮುಖ ಕಾರ್ಪ್‌ಗಳ ಪಾಲಿಕಲ್ಚರ್ ಸೂಕ್ತವಾಗಿದೆ.", मराठी: "कटला, रोहू आणि मृगल यांसारख्या भारतीय प्रमुख कार्प्सचे पॉलीकल्चर आदर्श आहे." },
+                poultry_fish_benefits: { English: "Reduces fish feed cost by up to 60%, ensures efficient waste recycling, and provides diversified income.", اردو: "مچھلی کے چارے کی لاگت میں 60% تک کمی، فضلہ کی موثر ری سائیکلنگ، اور انڈے/گوشت اور مچھلی دونوں سے متنوع آمدنی۔", हिन्दी: "मछली फ़ीड लागत को 60% तक कम करता है, कुशल अपशिष्ट पुनर्चक्रण सुनिश्चित करता है, और विविध आय प्रदान करता है।", ಕನ್ನಡ: "ಮೀನು ಫೀಡ್ ವೆಚ್ಚವನ್ನು 60% ವರೆಗೆ ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ದಕ್ಷ ತ್ಯಾಜ್ಯ ಮರುಬಳಕೆಯನ್ನು ಖಚಿತಪಡಿಸುತ್ತದೆ ಮತ್ತು ವೈವಿಧ್ಯಮಯ ಆದಾಯವನ್ನು ಒದಗಿಸುತ್ತದೆ.", मराठी: "माशांच्या खाद्याचा खर्च 60% पर्यंत कमी करते, कार्यक्षम कचरा पुनर्वापर सुनिश्चित करते आणि वैविध्यपूर्ण उत्पन्न प्रदान करते." },
+                poultry_fish_profit: { English: "Approximately ₹2.5 - ₹3.5 Lakhs per year from a 1-hectare system.", اردو: "1 ہیکٹر کے نظام سے سالانہ تقریباً 2.5 سے 3.5 لاکھ روپے۔", हिन्दी: "1-हेक्टेयर प्रणाली से प्रति वर्ष लगभग ₹2.5 - ₹3.5 लाख।", ಕನ್ನಡ: "1-ಹೆಕ್ಟೇರ್ ವ್ಯವಸ್ಥೆಯಿಂದ ವರ್ಷಕ್ಕೆ ಅಂದಾಜು ₹2.5 - ₹3.5 ಲಕ್ಷ.", मराठी: "1-हेक्टर प्रणालीतून प्रति वर्ष अंदाजे ₹2.5 - ₹3.5 लाख." },
+                poultry_fish_video: { English: "Watch Poultry-Fish Farming Video", اردو: "پولٹری-مچھلی فارمنگ ویڈیو دیکھیں", हिन्दी: "मुर्गी-मछली पालन वीडियो देखें", ಕನ್ನಡ: "ಕೋಳಿ-ಮೀನು ಸಾಕಾಣಿಕೆ ವೀಡಿಯೊವನ್ನು ವೀಕ್ಷಿಸಿ", मराठी: "कुक्कुट-मत्स्य पालन व्हिडिओ पहा" },
+                 cattle_fish_concept: { English: "Cow dung is used as a primary organic fertilizer for the fish pond.", اردو: "گائے کا گوبر مچھلی کے تالاب کے لیے بنیادی نامیاتی کھاد کے طور پر استعمال ہوتا ہے۔", हिन्दी: "गाय के गोबर का उपयोग मछली तालाब के लिए प्राथमिक जैविक उर्वरक के रूप में किया जाता है।", ಕನ್ನಡ: "ಹಸುವಿನ ಸಗಣಿಯನ್ನು ಮೀನು ಕೊಳಕ್ಕೆ ಪ್ರಾಥಮಿಕ ಸಾವಯವ ಗೊಬ್ಬರವಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ.", मराठी: "गायीच्या शेणाचा वापर माशांच्या तलावासाठी प्राथमिक सेंद्रिय खत म्हणून केला जातो." },
+                 cattle_fish_cattle: { English: "5-6 dairy cattle can provide enough manure for a 1-hectare pond.", اردو: "5-6 ڈیری مویشی 1 ہیکٹر کے تالاب کے لیے کافی کھاد فراہم کر سکتے ہیں۔", हिन्दी: "5-6 डेयरी मवेशी 1 हेक्टेयर के तालाब के लिए पर्याप्त खाद प्रदान कर सकते हैं।", ಕನ್ನಡ: "5-6 ಹೈನುಗಾರಿಕೆ ದನಗಳು 1-ಹೆಕ್ಟೇರ್ ಕೊಳಕ್ಕೆ ಸಾಕಷ್ಟು ಗೊಬ್ಬರವನ್ನು ಒದಗಿಸಬಹುದು.", मराठी: "5-6 दुभती जनावरे 1-हेक्टर तलावासाठी पुरेसे खत देऊ शकतात." },
+                 cattle_fish_fish: { English: "Composite fish culture with 3-6 species of carps is recommended.", اردو: "3-6 اقسام کی کارپ مچھلیوں کے ساتھ مخلوط مچھلی کی کاشت کی سفارش کی جاتی ہے۔", हिन्दी: "3-6 प्रजातियों के कार्प्स के साथ मिश्रित मछली पालन की सिफारिश की जाती है।", ಕನ್ನಡ: "3-6 ಜಾತಿಯ ಕಾರ್ಪ್‌ಗಳೊಂದಿಗೆ ಸಂಯೋಜಿತ ಮೀನು ಕೃಷಿಯನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.", मराठी: "3-6 जातीच्या कार्प्ससह मिश्र मत्स्यपालनाची शिफारस केली जाते." },
+                 cattle_fish_benefits: { English: "Provides income from milk and fish. Biogas production from dung saves energy costs.", اردو: "دودھ اور مچھلی سے آمدنی۔ گوبر سے بائیو گیس کی پیداوار توانائی کی لاگت بچاتی ہے۔", हिन्दी: "दूध और मछली से आय प्रदान करता है। गोबर से बायोगैस उत्पादन ऊर्जा लागत बचाता है।", ಕನ್ನಡ: "ಹಾಲು ಮತ್ತು ಮೀನುಗಳಿಂದ ಆದಾಯವನ್ನು ಒದಗಿಸುತ್ತದೆ. ಸಗಣಿಯಿಂದ ಜೈವಿಕ ಅನಿಲ ಉತ್ಪಾದನೆಯು ಇಂಧನ ವೆಚ್ಚವನ್ನು ಉಳಿಸುತ್ತದೆ.", मराठी: "दूध आणि माशांपासून उत्पन्न मिळते. शेणापासून बायोगॅस निर्मितीमुळे ऊर्जेचा खर्च वाचतो." },
+                 cattle_fish_profit: { English: "Around ₹3 - ₹4 Lakhs annually from the combined enterprise.", اردو: "مشترکہ منصوبے سے سالانہ تقریباً 3 سے 4 لاکھ روپے۔", हिन्दी: "संयुक्त उद्यम से सालाना लगभग ₹3 - ₹4 लाख।", ಕನ್ನಡ: "ಸಂಯೋಜಿತ ಉದ್ಯಮದಿಂದ ವಾರ್ಷಿಕವಾಗಿ ಸುಮಾರು ₹3 - ₹4 ಲಕ್ಷ.", मराठी: "संयुक्त उद्यमातून दरवर्षी सुमारे ₹3 - ₹4 लाख." },
+                 cattle_fish_video: { English: "Watch Cattle-Fish Farming Video", اردو: "مویشی-مچھلی فارمنگ ویڈیو دیکھیں", हिन्दी: "मवेशी-मछली पालन वीडियो देखें", ಕನ್ನಡ: "ಜಾನುವಾರು-ಮೀನು ಸಾಕಾಣಿಕೆ ವೀಡಿಯೊವನ್ನು ವೀಕ್ಷಿಸಿ", मराठी: "पशु-मत्स्य पालन व्हिडिओ पहा" },
+                 pig_fish_concept: { English: "Pig excreta is an excellent fertilizer. Pigs are housed on the pond embankment, and the waste is directly drained into the pond.", اردو: "سور کا فضلہ ایک بہترین کھاد ہے۔ سور کو تالاب کے کنارے رکھا جاتا ہے۔", हिन्दी: "सुअर का मल एक उत्कृष्ट उर्वरक है। सूअरों को तालाब के तटबंध पर रखा जाता है, और अपशिष्ट को सीधे तालाब में बहा दिया जाता है।", ಕನ್ನಡ: "ಹಂದಿ ಹಿಕ್ಕೆ ಅತ್ಯುತ್ತಮ ಗೊಬ್ಬರವಾಗಿದೆ. ಹಂದಿಗಳನ್ನು ಕೊಳದ ದಡದಲ್ಲಿ ಇರಿಸಲಾಗುತ್ತದೆ, ಮತ್ತು ತ್ಯಾಜ್ಯವನ್ನು ನೇರವಾಗಿ ಕೊಳಕ್ಕೆ ಹರಿಸಲಾಗುತ್ತದೆ.", मराठी: "डुकराची विष्ठा एक उत्कृष्ट खत आहे. डुकरांना तलावाच्या काठावर ठेवले जाते, आणि कचरा थेट तलावात सोडला जातो." },
+                 pig_fish_pig: { English: "30-40 pigs can be integrated with a 1-hectare pond.", اردو: "30-40 سور کو 1 ہیکٹر کے تالاب کے ساتھ مربوط کیا جا سکتا ہے۔", हिन्दी: "30-40 सूअरों को 1 हेक्टेयर के तालाब के साथ एकीकृत किया जा सकता है।", ಕನ್ನಡ: "30-40 ಹಂದಿಗಳನ್ನು 1-ಹೆಕ್ಟೇರ್ ಕೊಳದೊಂದಿಗೆ ಸಂಯೋಜಿಸಬಹುದು.", मराठी: "30-40 डुक्कर 1-हेक्टर तलावात एकत्रित केले जाऊ शकतात." },
+                 pig_fish_fish: { English: "Air-breathing fish like Catfish are often preferred as pig waste can lower dissolved oxygen levels.", اردو: "کیٹ فش جیسی ہوا میں سانس لینے والی مچھلیوں کو ترجیح دی جاتی ہے۔", हिन्दी: "कैटफ़िश जैसी हवा में सांस लेने वाली मछलियों को अक्सर पसंद किया जाता है क्योंकि सुअर का अपशिष्ट घुलित ऑक्सीजन के स्तर को कम कर सकता है।", ಕನ್ನಡ: "ಹಂದಿ ತ್ಯಾಜ್ಯವು ಕರಗಿದ ಆಮ್ಲಜನಕದ ಮಟ್ಟವನ್ನು ಕಡಿಮೆ ಮಾಡುವುದರಿಂದ ಕ್ಯಾಟ್‌ಫಿಶ್‌ನಂತಹ ಗಾಳಿಯಲ್ಲಿ ಉಸಿರಾಡುವ ಮೀನುಗಳನ್ನು ಹೆಚ್ಚಾಗಿ ಆದ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ.", मराठी: "कॅटफिशसारखे हवेत श्वास घेणारे मासे अनेकदा पसंत केले जातात कारण डुकराच्या कचऱ्यामुळे विरघळलेल्या ऑक्सिजनची पातळी कमी होऊ शकते." },
+                 pig_fish_benefits: { English: "Extremely high productivity. Reduces feed cost for both pigs and fish.", اردو: "انتہائی اعلیٰ پیداواریت۔ سور اور مچھلی دونوں کے لیے چارے کی لاگت کم ہوتی ہے۔", हिन्दी: "अत्यंत उच्च उत्पादकता। सूअरों और मछलियों दोनों के लिए फ़ीड लागत कम करता है।", ಕನ್ನಡ: "ಅತ್ಯಂತ ಹೆಚ್ಚಿನ ಉತ್ಪಾದಕತೆ. ಹಂದಿಗಳು ಮತ್ತು ಮೀನುಗಳಿಗೆ ಫೀಡ್ ವೆಚ್ಚವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ.", मराठी: "अत्यंत उच्च उत्पादकता. डुक्कर आणि मासे दोघांसाठीही खाद्याचा खर्च कमी करते." },
+                 pig_fish_profit: { English: "Can be highly profitable, with estimates ranging from ₹3 - ₹5 Lakhs per year.", اردو: "سالانہ 3 سے 5 لاکھ روپے تک کا تخمینہ۔", हिन्दी: "अत्यधिक लाभदायक हो सकता है, अनुमान ₹3 - ₹5 लाख प्रति वर्ष तक है।", ಕನ್ನಡ: "ಅತ್ಯಂತ ಲಾಭದಾಯಕವಾಗಬಹುದು, ಅಂದಾಜುಗಳು ವರ್ಷಕ್ಕೆ ₹3 - ₹5 ಲಕ್ಷದವರೆಗೆ ಇರುತ್ತದೆ.", मराठी: "अत्यंत फायदेशीर असू शकते, अंदाजे प्रति वर्ष ₹3 - ₹5 लाख." },
+                 pig_fish_video: { English: "Watch Pig-Fish Farming Video", اردو: "سور-مچھلی فارمنگ ویڈیو دیکھیں", हिन्दी: "सुअर-मछली पालन वीडियो देखें", ಕನ್ನಡ: "ಹಂದಿ-ಮೀನು ಸಾಕಾಣಿಕೆ ವೀಡಿಯೊವನ್ನು ವೀಕ್ಷಿಸಿ", मराठी: "डुक्कर-मत्स्य पालन व्हिडिओ पहा" },
+                 duck_fish_concept: { English: "Ducks live on the pond surface. Their droppings fertilize the water, and they control unwanted insects and weeds.", اردو: "بطخیں تالاب کی سطح پر رہتی ہیں۔ ان کی بیٹھیں پانی کو کھاد دیتی ہیں۔", हिन्दी: "बत्तखें तालाब की सतह पर रहती हैं। उनकी बीट पानी को निषेचित करती है, और वे अवांछित कीड़ों और खरपतवारों को नियंत्रित करती हैं।", ಕನ್ನಡ: "ಬಾತುಕೋಳಿಗಳು ಕೊಳದ ಮೇಲ್ಮೈಯಲ್ಲಿ ವಾಸಿಸುತ್ತವೆ. ಅವುಗಳ ಹಿಕ್ಕೆಗಳು ನೀರನ್ನು ಫಲವತ್ತಾಗಿಸುತ್ತದೆ, ಮತ್ತು ಅವು ಅನಗತ್ಯ ಕೀಟಗಳು ಮತ್ತು ಕಳೆಗಳನ್ನು ನಿಯಂತ್ರಿಸುತ್ತವೆ.", मराठी: "बदके तलावाच्या पृष्ठभागावर राहतात. त्यांची विष्ठा पाण्याला खत घालते, आणि ते नको असलेले कीटक आणि तण नियंत्रित करतात." },
+                 duck_fish_duck: { English: "200-300 ducks can be raised per hectare of water area.", اردو: "200-300 بطخیں فی ہیکٹر پانی کے رقبے پر پالی جا سکتی ہیں۔", हिन्दी: "प्रति हेक्टेयर जल क्षेत्र में 200-300 बत्तखें पाली जा सकती हैं।", ಕನ್ನಡ: "ಪ್ರತಿ ಹೆಕ್ಟೇರ್ ನೀರಿನ ಪ್ರದೇಶದಲ್ಲಿ 200-300 ಬಾತುಕೋಳಿಗಳನ್ನು ಸಾಕಬಹುದು.", मराठी: "प्रति हेक्टर पाण्याच्या क्षेत्रात 200-300 बदके पाळता येतात." },
+                 duck_fish_fish: { English: "A polyculture of carps is ideal. Ducks eat predatory insects and snails.", اردو: "کارپ مچھلیوں کی مخلوط کاشت مثالی ہے۔ بطخیں شکاری کیڑوں کو کھاتی ہیں۔", हिन्दी: "कार्प्स की पॉलीकल्चर आदर्श है। बत्तखें शिकारी कीड़ों और घोंघों को खाती हैं।", ಕನ್ನಡ: "ಕಾರ್ಪ್‌ಗಳ ಪಾಲಿಕಲ್ಚರ್ ಸೂಕ್ತವಾಗಿದೆ. ಬಾತುಕೋಳಿಗಳು ಪರಭಕ್ಷಕ ಕೀಟಗಳು ಮತ್ತು ಬಸವನಗಳನ್ನು ತಿನ್ನುತ್ತವೆ.", मराठी: "कार्प्सचे पॉलीकल्चर आदर्श आहे. बदके शिकारी कीटक आणि गोगलगाय खातात." },
+                 duck_fish_benefits: { English: "No additional feed required for ducks as they feed on pond organisms. Provides income from duck eggs, meat, and fish simultaneously.", اردو: "بطخوں کے لیے اضافی چارے کی ضرورت نہیں ہوتی۔ انڈے، گوشت اور مچھلی سے بیک وقت آمدنی۔", हिन्दी: "बत्तखों के लिए किसी अतिरिक्त फ़ीड की आवश्यकता नहीं होती है क्योंकि वे तालाब के जीवों को खाती हैं। बत्तख के अंडे, मांस और मछली से एक साथ आय प्रदान करता है।", ಕನ್ನಡ: "ಬಾತುಕೋಳಿಗಳು ಕೊಳದ ಜೀವಿಗಳನ್ನು ತಿನ್ನುವುದರಿಂದ ಅವುಗಳಿಗೆ ಯಾವುದೇ ಹೆಚ್ಚುವರಿ ಫೀಡ್ ಅಗತ್ಯವಿಲ್ಲ. ಬಾತುಕೋಳಿ ಮೊಟ್ಟೆ, ಮಾಂಸ ಮತ್ತು ಮೀನುಗಳಿಂದ ಏಕಕಾಲದಲ್ಲಿ ಆದಾಯವನ್ನು ಒದಗಿಸುತ್ತದೆ.", मराठी: "बदकांसाठी कोणत्याही अतिरिक्त खाद्याची आवश्यकता नसते कारण ते तलावातील जीवांवर जगतात. बदकाच्या अंडी, मांस आणि माशांपासून एकाच वेळी उत्पन्न मिळते." },
+                 duck_fish_profit: { English: "A well-managed system can yield a net profit of ₹2 - ₹3 Lakhs per hectare annually.", اردو: "ایک اچھی طرح سے منظم نظام سے سالانہ 2 سے 3 لاکھ روپے فی ہیکٹر خالص منافع حاصل ہو سکتا ہے۔", हिन्दी: "एक अच्छी तरह से प्रबंधित प्रणाली प्रति हेक्टेयर सालाना ₹2 - ₹3 लाख का शुद्ध लाभ दे सकती है।", ಕನ್ನಡ: "ಉತ್ತಮವಾಗಿ ನಿರ್ವಹಿಸಲಾದ ವ್ಯವಸ್ಥೆಯು ಪ್ರತಿ ಹೆಕ್ಟೇರ್‌ಗೆ ವಾರ್ಷಿಕವಾಗಿ ₹2 - ₹3 ಲಕ್ಷ ನಿವ್ವಳ ಲಾಭವನ್ನು ನೀಡುತ್ತದೆ.", मराठी: "एक सुव्यवस्थित प्रणाली प्रति हेक्टर वार्षिक ₹2 - ₹3 लाख निव्वळ नफा देऊ शकते." },
+                 duck_fish_video: { English: "Watch Duck-Fish Farming Video", اردو: "بطخ-مچھلی فارمنگ ویڈیو دیکھیں", हिन्दी: "बत्तख-मछली पालन वीडियो देखें", ಕನ್ನಡ: "ಬಾತುಕೋಳಿ-ಮೀನು ಸಾಕಾಣಿಕೆ ವೀಡಿಯೊವನ್ನು ವೀಕ್ಷಿಸಿ", मराठी: "बदक-मत्स्य पालन व्हिडिओ पहा" },
+                 goat_fish_concept: { English: "Goat manure is used as organic fertilizer for the fish pond.", اردو: "بکری کی کھاد مچھلی کے تالاب کے لیے نامیاتی کھاد کے طور پر استعمال ہوتی ہے۔", हिन्दी: "बकरी की खाद का उपयोग मछली तालाब के लिए जैविक उर्वरक के रूप में किया जाता है।", ಕನ್ನಡ: "ಮೇಕೆ ಗೊಬ್ಬರವನ್ನು ಮೀನು ಕೊಳಕ್ಕೆ ಸಾವಯವ ಗೊಬ್ಬರವಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ.", मराठी: "शेळीच्या खताचा वापर माशांच्या तलावासाठी सेंद्रिय खत म्हणून केला जातो." },
+                 goat_fish_goat: { English: "A unit of 20-30 goats can support a 0.5 to 1-hectare pond.", اردو: "20-30 بکریوں کا ایک یونٹ 0.5 سے 1 ہیکٹر کے تالاب کو سہارا دے سکتا ہے۔", हिन्दी: "20-30 बकरियों की एक इकाई 0.5 से 1 हेक्टेयर के तालाब का समर्थन कर सकती है।", ಕನ್ನಡ: "20-30 ಮೇಕೆಗಳ ಒಂದು ಘಟಕವು 0.5 ರಿಂದ 1-ಹೆಕ್ಟೇರ್ ಕೊಳವನ್ನು ಬೆಂಬಲಿಸುತ್ತದೆ.", मराठी: "20-30 शेळ्यांचे एक युनिट 0.5 ते 1-हेक्टर तलावाला आधार देऊ शकते." },
+                 goat_fish_fish: { English: "A polyculture of carps is suitable. Goat manure is rich in nutrients.", اردو: "کارپ مچھلیوں کی مخلوط کاشت موزوں ہے۔ بکری کی کھاد غذائی اجزاء سے بھرپور ہوتی ہے۔", हिन्दी: "कार्प्स की पॉलीकल्चर उपयुक्त है। बकरी की खाद पोषक तत्वों से भरपूर होती है।", ಕನ್ನಡ: "ಕಾರ್ಪ್‌ಗಳ ಪಾಲಿಕಲ್ಚರ್ ಸೂಕ್ತವಾಗಿದೆ. ಮೇಕೆ ಗೊಬ್ಬರವು ಪೋಷಕಾಂಶಗಳಿಂದ ಸಮೃದ್ಧವಾಗಿದೆ.", मराठी: "कार्प्सचे पॉलीकल्चर योग्य आहे. शेळीचे खत पोषक तत्वांनी समृद्ध आहे." },
+                 goat_fish_benefits: { English: "High profitability from goat meat and milk, supplemented by fish sales.", اردو: "بکری کے گوشت اور دودھ سے زیادہ منافع، مچھلی کی فروخت سے اضافی۔", हिन्दी: "बकरी के मांस और दूध से उच्च लाभप्रदता, मछली की बिक्री से पूरक।", ಕನ್ನಡ: "ಮೇಕೆ ಮಾಂಸ ಮತ್ತು ಹಾಲಿನಿಂದ ಹೆಚ್ಚಿನ ಲಾಭದಾಯಕತೆ, ಮೀನು ಮಾರಾಟದಿಂದ ಪೂರಕವಾಗಿದೆ.", मराठी: "शेळीचे मांस आणि दुधापासून उच्च नफा, माशांच्या विक्रीतून पूरक." },
+                 goat_fish_profit: { English: "This system can yield net profits upwards of ₹3 - ₹4.5 Lakhs per year.", اردو: "یہ نظام سالانہ 3 سے 4.5 لاکھ روپے سے زیادہ کا خالص منافع دے سکتا ہے۔", हिन्दी: "यह प्रणाली प्रति वर्ष ₹3 - ₹4.5 लाख से अधिक का शुद्ध लाभ दे सकती है।", ಕನ್ನಡ: "ಈ ವ್ಯವಸ್ಥೆಯು ವರ್ಷಕ್ಕೆ ₹3 - ₹4.5 ಲಕ್ಷಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ನಿವ್ವಳ ಲಾಭವನ್ನು ನೀಡುತ್ತದೆ.", मराठी: "ही प्रणाली प्रति वर्ष ₹3 - ₹4.5 लाखांपेक्षा जास्त निव्वळ नफा देऊ शकते." },
+                 goat_fish_video: { English: "Watch Goat-Fish Farming Video", اردو: "بکری-مچھلی فارمنگ ویڈیو دیکھیں", हिन्दी: "बकरी-मछली पालन वीडियो देखें", ಕನ್ನಡ: "ಮೇಕೆ-ಮೀನು ಸಾಕಾಣಿಕೆ ವೀಡಿಯೊವನ್ನು ವೀಕ್ಷಿಸಿ", मराठी: "शेळी-मत्स्य पालन व्हिडिओ पहा" },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                localStorage.setItem('farmEaseLang', lang);
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+            
+            // --- FULL-SCREEN MODAL LOGIC ---
+            const systemCards = document.querySelectorAll('.system-card');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseBtn = document.getElementById('modal-close');
+
+            systemCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const systemType = card.dataset.system;
+                    const contentTemplate = document.getElementById(`${systemType}-content`);
+                    if (contentTemplate) {
+                        modalContent.innerHTML = contentTemplate.innerHTML;
+                        modalOverlay.classList.add('active');
+                        // Re-run translation for the new modal content
+                        setLanguage(localStorage.getItem('farmEaseLang') || 'English');
+                    }
+                });
+            });
+
+            function closeModal() {
+                 modalOverlay.classList.remove('active');
+            }
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+

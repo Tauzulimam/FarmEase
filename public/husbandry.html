@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Animal Husbandry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Interactive Card Hover Effect */
+        .info-card {
+             transition: all 0.4s ease;
+             cursor: pointer;
+             overflow: hidden;
+             position: relative;
+        }
+        .info-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+        .info-card-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease-in-out, opacity 0.6s ease-in-out 0.1s, padding-top 0.6s ease-in-out, margin-top 0.6s ease-in-out;
+        }
+        .info-card:hover .info-card-details {
+            max-height: 1500px; /* Increased for more content */
+            opacity: 1;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .info-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            transition: transform 0.5s ease;
+        }
+        .info-card:hover .info-card-bg {
+            transform: scale(1.1);
+        }
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(10, 40, 20, 0.9) 0%, rgba(10, 40, 20, 0.3) 100%);
+            z-index: 0;
+        }
+        .info-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="مراठी">मراठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="relative py-20">
+            <!-- Background Image -->
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('catback.png');"></div>
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <!-- Content -->
+            <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white" data-translate="ah_title">Animal Husbandry</h1>
+                <p class="mt-4 text-gray-200 max-w-2xl mx-auto" data-translate="ah_subtitle">Comprehensive guidance on livestock management, economics, and care.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-green-900 text-center mb-2" data-translate="species_guide_title">Species-Specific Guidance</h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="hover_prompt_main">Hover over a card to reveal detailed information.</p>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <!-- Goat Farming Card -->
+                    <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                        <div class="info-card-bg" style="background-image: url('gpic.png');"></div>
+                        <h3 class="text-4xl font-bold" data-translate="goat_farming_title">Goat Farming</h3>
+                        <div class="info-card-details border-t text-left">
+                            <h4 class="text-xl font-semibold mb-2" data-translate="profit_title">Profitability</h4>
+                            <p class="mb-4" data-translate="profit_goat_desc">~50% gross margin annually, which can increase to 80% if home-grown feed is utilized. The overall livestock sector shows a strong CAGR of 12.99%.</p>
+                            <h4 class="text-xl font-semibold mb-2" data-translate="rearing_title">Rearing Requirements</h4>
+                            <ul class="list-disc list-inside mb-4">
+                                <li data-translate="rearing_goat_space"><strong>Space:</strong> 4-5 sq ft per adult in a shed.</li>
+                                <li data-translate="rearing_goat_feed"><strong>Feed:</strong> 2-4% of body weight daily (green fodder & concentrate).</li>
+                                <li data-translate="rearing_goat_waste"><strong>Waste:</strong> Manure is excellent for biogas and organic fertilizer.</li>
+                            </ul>
+                            <h4 class="text-xl font-semibold mb-2" data-translate="care_title">Climate-Adapted Care</h4>
+                            <p data-translate="care_goat_desc">Provide shaded yards in hot zones, ensure good ventilation in humid areas, and use deep-litter bedding for insulation in cool climates. Maintain a buck-to-doe ratio of 1:25.</p>
+                        </div>
+                    </div>
+                    <!-- Dairy Farming Card -->
+                    <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                         <div class="info-card-bg" style="background-image: url('gpic.png');"></div>
+                        <h3 class="text-4xl font-bold" data-translate="dairy_farming_title">Dairy (Cattle & Buffalo)</h3>
+                        <div class="info-card-details border-t text-left">
+                            <h4 class="text-xl font-semibold mb-2" data-translate="profit_title">Profitability & Growth</h4>
+                            <p class="mb-4" data-translate="profit_dairy_desc">Approximately 25-35% profit margin for smallholder dairy operations. Key growth rates (CAGR) include Milk (5.62%), Egg (6.87%), and Meat (4.85%).</p>
+                             <h4 class="text-xl font-semibold mb-2" data-translate="rearing_title">Rearing Requirements</h4>
+                            <ul class="list-disc list-inside mb-4">
+                                <li data-translate="rearing_dairy_space"><strong>Space:</strong> 8-10 sq ft per adult in a shed plus an open yard.</li>
+                                <li data-translate="rearing_dairy_feed"><strong>Feed:</strong> 2.5-3% of body weight (60% roughage, 40% concentrate).</li>
+                                <li data-translate="rearing_dairy_waste"><strong>Waste:</strong> Cow dung is ideal for biogas plants and vermicompost.</li>
+                            </ul>
+                            <h4 class="text-xl font-semibold mb-2" data-translate="overview_state_title">Top Producer States (Total Livestock)</h4>
+                            <ul class="list-disc list-inside mb-4">
+                                <li><strong data-translate="state_up">Uttar Pradesh:</strong> 68.7 m</li>
+                                <li><strong data-translate="state_raj">Rajasthan:</strong> 56.8 m</li>
+                                <li><strong data-translate="state_mah">Maharashtra:</strong> 49.6 m</li>
+                            </ul>
+                            <h4 class="text-xl font-semibold mb-2" data-translate="care_title">Climate-Adapted Care</h4>
+                            <p data-translate="care_dairy_desc">Use north-south oriented sheds in arid zones, elevated floors in humid zones, and insulated walls in cool zones. Vaccinate against FMD & HS before monsoon.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+
+                // Animal Husbandry Page Specific
+                ah_title: { English: "Animal Husbandry", اردو: "مویشی پالنا", हिन्दी: "पशुपालन", ಕನ್ನಡ: "ಪಶುಸಂಗೋಪನೆ", मराठी: "पशुसंवर्धन" },
+                ah_subtitle: { English: "Comprehensive guidance on livestock management, economics, and care.", اردو: "مویشیوں کے انتظام، معاشیات اور دیکھ بھال پر جامع رہنمائی۔", हिन्दी: "पशुधन प्रबंधन, अर्थशास्त्र और देखभाल पर व्यापक मार्गदर्शन।", ಕನ್ನಡ: "ಜಾನುವಾರು ನಿರ್ವಹಣೆ, ಅರ್ಥಶಾಸ್ತ್ರ ಮತ್ತು ಆರೈಕೆಯ ಬಗ್ಗೆ ಸಮಗ್ರ ಮಾರ್ಗದರ್ಶನ.", मराठी: "पशुधन व्यवस्थापन, अर्थशास्त्र आणि काळजी यावर व्यापक मार्गदर्शन." },
+                overview_state_title: { English: "Top Producer States (Total Livestock)", اردو: "سب سے زیادہ پیداوار والی ریاستیں (کل مویشی)", हिन्दी: "शीर्ष उत्पादक राज्य (कुल पशुधन)", ಕನ್ನಡ: "ಟಾಪ್ ನಿರ್ಮಾಪಕ ರಾಜ್ಯಗಳು (ಒಟ್ಟು ಜಾನುವಾರು)", मराठी: "शीर्ष उत्पादक राज्ये (एकूण पशुधन)" },
+                state_up: { English: "Uttar Pradesh:", اردو: "اتر پردیش:", हिन्दी: "उत्तर प्रदेश:", ಕನ್ನಡ: "ಉತ್ತರ ಪ್ರದೇಶ:", मराठी: "उत्तर प्रदेश:" },
+                state_raj: { English: "Rajasthan:", اردو: "راجستھان:", हिन्दी: "राजस्थान:", ಕನ್ನಡ: "ರಾಜಸ್ಥಾನ:", मराठी: "राजस्थान:" },
+                state_mah: { English: "Maharashtra:", اردو: "مہاراشٹر:", हिन्दी: "महाराष्ट्र:", ಕನ್ನಡ: "ಮಹಾರಾಷ್ಟ್ರ:", मराठी: "महाराष्ट्र:" },
+                species_guide_title: { English: "Species-Specific Guidance", اردو: "نسل کے لحاظ سے رہنمائی", हिन्दी: "प्रजाति-विशिष्ट मार्गदर्शन", ಕನ್ನಡ: "ಪ್ರಭೇದ-ನಿರ್ದಿಷ್ಟ ಮಾರ್ಗದರ್ಶನ", मराठी: "प्रजाती-विशिष्ट मार्गदर्शन" },
+                hover_prompt_main: { English: "Hover over a card to reveal detailed information.", اردو: "تفصیلی معلومات کے لیے کارڈ پر ہوور کریں۔", हिन्दी: "विस्तृत जानकारी प्रकट करने के लिए एक कार्ड पर होवर करें।", ಕನ್ನಡ: "ವಿವರವಾದ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸಲು ಕಾರ್ಡ್ ಮೇಲೆ ಹೋವರ್ ಮಾಡಿ.", मराठी: "तपशीलवार माहिती उघड करण्यासाठी कार्डवर होवर करा." },
+                goat_farming_title: { English: "Goat Farming", اردو: "بکری فارمنگ", हिन्दी: "बकरी पालन", ಕನ್ನಡ: "ಮೇಕೆ ಸಾಕಾಣಿಕೆ", मराठी: "शेळीपालन" },
+                dairy_farming_title: { English: "Dairy (Cattle & Buffalo)", اردو: "ڈیری (مویشی اور بھینس)", हिन्दी: "डेयरी (मवेशी और भैंस)", ಕನ್ನಡ: "ಡೈರಿ (ದನ ಮತ್ತು ಎಮ್ಮೆ)", मराठी: "दुग्धव्यवसाय (गुरे आणि म्हैस)" },
+                profit_title: { English: "Profitability & Growth", اردو: "منافع اور ترقی", हिन्दी: "लाभप्रदता और विकास", ಕನ್ನಡ: "ಲಾಭದಾಯಕತೆ ಮತ್ತು ಬೆಳವಣಿಗೆ", मराठी: "नफा आणि वाढ" },
+                rearing_title: { English: "Rearing Requirements", اردو: "پرورش کی ضروریات", हिन्दी: "पालन आवश्यकताएँ", ಕನ್ನಡ: "ಪಾಲನೆ ಅಗತ್ಯಗಳು", मराठी: "पालन आवश्यकता" },
+                care_title: { English: "Climate-Adapted Care", اردو: "موسمیاتی دیکھ بھال", हिन्दी: "जलवायु-अनुकूलित देखभाल", ಕನ್ನಡ: "ಹವಾಮಾನ-ಹೊಂದಾಣಿಕೆಯ ಆರೈಕೆ", मराठी: "हवामान-अनुकूल काळजी" },
+                profit_goat_desc: { English: "~50% gross margin annually, which can increase to 80% if home-grown feed is utilized. The overall livestock sector shows a strong CAGR of 12.99%.", اردو: "سالانہ تقریباً 50% مجموعی منافع، جو گھر میں تیار کردہ چارے کے استعمال سے 80% تک بڑھ سکتا ہے۔ مجموعی طور پر مویشیوں کا شعبہ 12.99% کی مضبوط CAGR دکھاتا ہے۔", हिन्दी: "~50% सकल मार्जिन सालाना, जो घर में उगाए गए चारे का उपयोग करने पर 80% तक बढ़ सकता है। समग्र पशुधन क्षेत्र 12.99% की मजबूत सीएजीआर दिखाता है।", ಕನ್ನಡ: "~50% ಒಟ್ಟು ಲಾಭಾಂಶ ವಾರ್ಷಿಕವಾಗಿ, ಮನೆಯಲ್ಲಿ ಬೆಳೆದ ಫೀಡ್ ಬಳಸಿದರೆ 80% ಕ್ಕೆ ಹೆಚ್ಚಿಸಬಹುದು. ಒಟ್ಟಾರೆ ಜಾನುವಾರು ವಲಯವು 12.99% ರಷ್ಟು ಪ್ರಬಲ ಸಿಎಜಿಆರ್ ಅನ್ನು ತೋರಿಸುತ್ತದೆ.", मराठी: "~50% एकूण मार्जिन वार्षिक, घरात उगवलेल्या चाऱ्याचा वापर केल्यास 80% पर्यंत वाढू शकते. एकूण पशुधन क्षेत्र 12.99% चा मजबूत सीएजीआर दर्शवितो." },
+                rearing_goat_space: { English: "Space: 4-5 sq ft per adult in a shed.", اردو: "جگہ: ایک شیڈ میں فی بالغ 4-5 مربع فٹ۔", हिन्दी: "जगह: एक शेड में प्रति वयस्क 4-5 वर्ग फुट।", ಕನ್ನಡ: "ಸ್ಥಳ: ಶೆಡ್‌ನಲ್ಲಿ ಪ್ರತಿ ವಯಸ್ಕರಿಗೆ 4-5 ಚದರ ಅಡಿ.", मराठी: "जागा: एका शेडमध्ये प्रति प्रौढ 4-5 चौरस फूट." },
+                rearing_goat_feed: { English: "Feed: 2-4% of body weight daily (green fodder & concentrate).", اردو: "چارہ: روزانہ جسمانی وزن کا 2-4% (سبز چارہ اور کنسنٹریٹ)۔", हिन्दी: "चारा: शरीर के वजन का 2-4% दैनिक (हरा चारा और सांद्र)।", ಕನ್ನಡ: "ಫೀಡ್: ದೇಹದ ತೂಕದ 2-4% ದೈನಂದಿನ (ಹಸಿರು ಮೇವು ಮತ್ತು ಸಾಂದ್ರತೆ).", मराठी: "चारा: शरीराच्या वजनाच्या 2-4% दररोज (हिरवा चारा आणि सांद्र). " },
+                rearing_goat_waste: { English: "Waste: Manure is excellent for biogas and organic fertilizer.", اردو: "فضلہ: کھاد بائیو گیس اور نامیاتی کھاد کے لیے بہترین ہے۔", हिन्दी: "अपशिष्ट: खाद बायोगैस और जैविक उर्वरक के लिए उत्कृष्ट है।", ಕನ್ನಡ: "ತ್ಯಾಜ್ಯ: ಗೊಬ್ಬರವು ಜೈವಿಕ ಅನಿಲ ಮತ್ತು ಸಾವಯವ ಗೊಬ್ಬರಕ್ಕೆ ಅತ್ಯುತ್ತಮವಾಗಿದೆ.", मराठी: "कचरा: खत बायोगॅस आणि सेंद्रिय खतासाठी उत्कृष्ट आहे." },
+                care_goat_desc: { English: "Provide shaded yards in hot zones, ensure good ventilation in humid areas, and use deep-litter bedding for insulation in cool climates. Maintain a buck-to-doe ratio of 1:25.", اردو: "گرم علاقوں میں سایہ دار صحن فراہم کریں، مرطوب علاقوں میں اچھی وینٹیلیشن کو یقینی بنائیں، اور ٹھنڈے موسم میں موصلیت کے لیے گہری بچھالی کا استعمال کریں۔ بکرے اور بکری کا تناسب 1:25 برقرار رکھیں۔", हिन्दी: "गर्म क्षेत्रों में छायादार बाड़े प्रदान करें, आर्द्र क्षेत्रों में अच्छा वेंटिलेशन सुनिश्चित करें, और ठंडे मौसम में इन्सुलेशन के लिए गहरी-कूड़े की बिस्तर का उपयोग करें। बकरे-बकरी का अनुपात 1:25 बनाए रखें।", ಕನ್ನಡ: "ಬಿಸಿ ವಲಯಗಳಲ್ಲಿ ನೆರಳಿನ ಅಂಗಳಗಳನ್ನು ಒದಗಿಸಿ, ಆರ್ದ್ರ ಪ್ರದೇಶಗಳಲ್ಲಿ ಉತ್ತಮ ವಾತಾಯನವನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ತಂಪಾದ ವಾತಾವರಣದಲ್ಲಿ ನಿರೋಧನಕ್ಕಾಗಿ ಆಳವಾದ-ಕಸದ ಹಾಸಿಗೆಯನ್ನು ಬಳಸಿ. 1:25 ರ ಬಕ್-ಟು-ಡೋ ಅನುಪಾತವನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ.", मराठी: "गरम झोनमध्ये सावलीचे आवारे द्या, दमट भागात चांगले वायुवीजन सुनिश्चित करा आणि थंड हवामानात इन्सुलेशनसाठी खोल-लिटर बेडिंग वापरा. बकरा-शेळीचे प्रमाण 1:25 ठेवा." },
+                profit_dairy_desc: { English: "Approximately 25-35% profit margin for smallholder dairy operations. Key growth rates (CAGR) include Milk (5.62%), Egg (6.87%), and Meat (4.85%).", اردو: "چھوٹے ڈیری فارمرز کے لیے تقریباً 25-35% منافع کا مارجن۔ اہم شرح نمو (CAGR) میں دودھ (5.62%)، انڈے (6.87%)، اور گوشت (4.85%) شامل ہیں۔", हिन्दी: "छोटे डेयरी संचालनों के लिए लगभग 25-35% लाभ मार्जिन। मुख्य विकास दर (सीएजीआर) में दूध (5.62%), अंडा (6.87%), और मांस (4.85%) शामिल हैं।", ಕನ್ನಡ: "ಸಣ್ಣ ಹಿಡುವಳಿದಾರರ ಡೈರಿ ಕಾರ್ಯಾಚರಣೆಗಳಿಗೆ ಸರಿಸುಮಾರು 25-35% ಲಾಭಾಂಶ. ಪ್ರಮುಖ ಬೆಳವಣಿಗೆ ದರಗಳು (ಸಿಎಜಿಆರ್) ಹಾಲು (5.62%), ಮೊಟ್ಟೆ (6.87%), ಮತ್ತು ಮಾಂಸ (4.85%) ಅನ್ನು ಒಳಗೊಂಡಿವೆ.", मराठी: "लहान शेतकऱ्यांच्या दुग्ध व्यवसायासाठी अंदाजे 25-35% नफा मार्जिन. मुख्य वाढीचा दर (सीएजीआर) दूध (5.62%), अंडी (6.87%), आणि मांस (4.85%) यांचा समावेश आहे." },
+                rearing_dairy_space: { English: "Space: 8-10 sq ft per adult in a shed plus an open yard.", اردو: "جگہ: ایک شیڈ میں فی بالغ 8-10 مربع فٹ کے علاوہ ایک کھلا صحن۔", हिन्दी: "जगह: एक शेड में प्रति वयस्क 8-10 वर्ग फुट और एक खुला बाड़ा।", ಕನ್ನಡ: "ಸ್ಥಳ: ಶೆಡ್‌ನಲ್ಲಿ ಪ್ರತಿ ವಯಸ್ಕರಿಗೆ 8-10 ಚದರ ಅಡಿ ಮತ್ತು ತೆರೆದ ಅಂಗಳ.", मराठी: "जागा: एका शेडमध्ये प्रति प्रौढ 8-10 चौरस फूट आणि एक खुले आवार." },
+                rearing_dairy_feed: { English: "Feed: 2.5-3% of body weight (60% roughage, 40% concentrate).", اردو: "چارہ: جسمانی وزن کا 2.5-3% (60% چارہ، 40% کنسنٹریٹ)۔", हिन्दी: "चारा: शरीर के वजन का 2.5-3% (60% चारा, 40% सांद्र)।", ಕನ್ನಡ: "ಫೀಡ್: ದೇಹದ ತೂಕದ 2.5-3% (60% ರೊಪ್ಪೆ, 40% ಸಾಂದ್ರತೆ).", मराठी: "चारा: शरीराच्या वजनाच्या 2.5-3% (60% चारा, 40% सांद्र). " },
+                rearing_dairy_waste: { English: "Waste: Cow dung is ideal for biogas plants and vermicompost.", اردو: "فضلہ: گائے کا گوبر بائیو گیس پلانٹس اور ورمی کمپوسٹ کے لیے مثالی ہے۔", हिन्दी: "अपशिष्ट: गाय का गोबर बायोगैस संयंत्रों और वर्मीकम्पोस्ट के लिए आदर्श है।", ಕನ್ನಡ: "ತ್ಯಾಜ್ಯ: ಹಸುವಿನ ಸಗಣಿ ಜೈವಿಕ ಅನಿಲ ಸ್ಥಾವರಗಳಿಗೆ ಮತ್ತು ವರ್ಮಿಕಾಂಪೋಸ್ಟ್‌ಗೆ ಸೂಕ್ತವಾಗಿದೆ.", मराठी: "कचरा: गायीचे शेण बायोगॅस संयंत्र आणि वर्मीकंपोस्टसाठी आदर्श आहे." },
+                care_dairy_desc: { English: "Use north-south oriented sheds in arid zones, elevated floors in humid zones, and insulated walls in cool zones. Vaccinate against FMD & HS before monsoon.", اردو: "خشک علاقوں میں شمال-جنوب کی سمت والے شیڈز، مرطوب علاقوں میں اونچے فرش اور ٹھنڈے علاقوں میں موصل دیواریں استعمال کریں۔ مون سون سے پہلے FMD اور HS کے خلاف ویکسین لگائیں۔", हिन्दी: "शुष्क क्षेत्रों में उत्तर-दक्षिण उन्मुख शेड का उपयोग करें, आर्द्र क्षेत्रों में ऊंचे फर्श, और ठंडे क्षेत्रों में इंसुलेटेड दीवारों का उपयोग करें। मानसून से पहले एफएमडी और एचएस के खिलाफ टीकाकरण करें।", ಕನ್ನಡ: "ಶುಷ್ಕ ವಲಯಗಳಲ್ಲಿ ಉತ್ತರ-ದಕ್ಷಿಣಾಭಿಮುಖವಾದ ಶೆಡ್‌ಗಳನ್ನು ಬಳಸಿ, ಆರ್ದ್ರ ವಲಯಗಳಲ್ಲಿ ಎತ್ತರದ ಮಹಡಿಗಳನ್ನು ಮತ್ತು ತಂಪಾದ ವಲಯಗಳಲ್ಲಿ ನಿರೋಧಕ ಗೋಡೆಗಳನ್ನು ಬಳಸಿ. ಮಾನ್ಸೂನ್‌ಗೆ ಮೊದಲು ಎಫ್‌ಎಂಡಿ ಮತ್ತು ಎಚ್‌ಎಸ್‌ಗೆ ವಿರುದ್ಧವಾಗಿ ಲಸಿಕೆ ಹಾಕಿ.", मराठी: "शुष्क झोनमध्ये उत्तर-दक्षिण दिशेने शेड वापरा, दमट झोनमध्ये उंच मजले आणि थंड झोनमध्ये इन्सुलेटेड भिंती वापरा. पावसाळ्यापूर्वी एफएमडी आणि एचएस विरुद्ध लसीकरण करा." },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                localStorage.setItem('farmEaseLang', lang);
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+

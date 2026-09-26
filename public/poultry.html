@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Poultry Farming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Interactive Card Hover Effect */
+        .info-card {
+             transition: all 0.4s ease;
+             cursor: pointer;
+             overflow: hidden;
+             position: relative;
+        }
+        .info-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+        .info-card-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease-in-out, opacity 0.6s ease-in-out 0.2s, padding-top 0.8s ease-in-out, margin-top 0.8s ease-in-out;
+        }
+        .info-card:hover .info-card-details {
+            max-height: 2500px; /* Increased for more content */
+            opacity: 1;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .info-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            animation: pan-image 25s linear infinite alternate;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            z-index: -1;
+        }
+        .info-card:hover .info-card-bg {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        @keyframes pan-image {
+            from { background-position: 0% 50%; }
+            to { background-position: 100% 50%; }
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(10, 40, 20, 0.9) 0%, rgba(10, 40, 20, 0.3) 100%);
+            z-index: 0;
+        }
+        .info-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .table-auto th, .table-auto td {
+            border: 1px solid #4a5568;
+            padding: 8px;
+        }
+        .table-auto th {
+            background-color: #2c5282;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="मराठी">मराठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="relative bg-cover bg-center py-20">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('Poultry.png'); z-index: -1;"></div>
+            <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white" data-translate="poultry_title">Poultry Farming</h1>
+                <p class="mt-4 text-gray-200 max-w-2xl mx-auto" data-translate="poultry_subtitle">A complete guide to housing, breeds, and health management for successful poultry farming.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-green-900 text-center mb-2" data-translate="poultry_guide_title">Poultry Management Guide</h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="hover_prompt_main">Hover over a card to reveal detailed information.</p>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <!-- Farm Setup & Breeds Card -->
+                    <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                        <div class="info-card-bg" style="background-image: url('YOUR_POULTRY_SETUP_IMAGE_URL_HERE');"></div>
+                        <h3 class="text-4xl font-bold" data-translate="setup_breeds_title">Farm Setup & Breeds</h3>
+                        <div class="info-card-details border-t text-left">
+                            <h4 class="text-xl font-semibold mb-4" data-translate="housing_title">Housing in Different Climatic Zones</h4>
+                            <ul class="list-disc list-inside space-y-2 mb-6">
+                                <li><strong data-translate="arid_zone">Arid/Semi-arid:</strong> <span data-translate="arid_desc">Use N-S oriented sheds with high vents, reflective roofs, and cooling systems.</span></li>
+                                <li><strong data-translate="humid_zone">Hot-Humid:</strong> <span data-translate="humid_desc">Elevated floors on stilts with open mesh sides for maximum airflow.</span></li>
+                                <li><strong data-translate="cool_zone">Cool/Temperate:</strong> <span data-translate="cool_desc">South-facing, insulated sheds with heating systems for winter.</span></li>
+                                <li><strong data-translate="monsoon_prep">Monsoon Prep:</strong> <span data-translate="monsoon_desc">Elevate feeders, ensure dry bedding, and complete pre-monsoon vaccinations.</span></li>
+                            </ul>
+                            <h4 class="text-xl font-semibold mb-4" data-translate="breeds_title">Major Chicken Breeds in India</h4>
+                            <div class="overflow-x-auto">
+                                <table class="table-auto w-full text-sm">
+                                    <thead><tr><th data-translate="breed_type">Breed Type</th><th data-translate="breed_name">Name</th><th data-translate="breed_purpose">Primary Purpose</th><th data-translate="breed_traits">Key Traits</th></tr></thead>
+                                    <tbody>
+                                        <tr><td rowspan="3" data-translate="layer_breeds">Layer Breeds</td><td data-translate="leghorn">White Leghorn</td><td data-translate="eggs">Egg production</td><td data-translate="leghorn_traits">280-320 eggs/yr</td></tr>
+                                        <tr><td data-translate="rhode_island">Rhode Island Red</td><td data-translate="dual">Dual purpose</td><td data-translate="rhode_island_traits">200-250 eggs/yr, hardy</td></tr>
+                                        <tr><td data-translate="isa_brown">ISA Brown</td><td data-translate="eggs">Egg production</td><td data-translate="isa_brown_traits">300+ eggs/yr, docile</td></tr>
+                                        <tr><td rowspan="2" data-translate="broiler_breeds">Broiler Breeds</td><td data-translate="cobb">Cobb 500</td><td data-translate="meat">Meat production</td><td data-translate="cobb_traits">Rapid growth (2.5 kg in 6 wk)</td></tr>
+                                        <tr><td data-translate="vencobb">Vencobb 400</td><td data-translate="meat">Meat production</td><td data-translate="vencobb_traits">Good disease resistance</td></tr>
+                                         <tr><td rowspan="2" data-translate="desi_breeds">Native/Desi</td><td data-translate="aseel">Aseel</td><td data-translate="dual">Dual purpose</td><td data-translate="aseel_traits">Slow growth, strong immunity</td></tr>
+                                        <tr><td data-translate="kadaknath">Kadaknath</td><td data-translate="dual">Dual purpose</td><td data-translate="kadaknath_traits">Black flesh, high value</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Operations & Health Card -->
+                    <div class="info-card relative rounded-lg text-white p-8 flex flex-col justify-end min-h-[300px]">
+                         <div class="info-card-bg" style="background-image: url('YOUR_POULTRY_HEALTH_IMAGE_URL_HERE');"></div>
+                        <h3 class="text-4xl font-bold" data-translate="ops_health_title">Operations & Health</h3>
+                        <div class="info-card-details border-t text-left">
+                            <h4 class="text-xl font-semibold mb-4" data-translate="beginner_tips_title">Beginner Tips & Benefits</h4>
+                             <ul class="list-disc list-inside space-y-2 mb-6">
+                                <li><strong data-translate="benefits">Benefits:</strong> <span data-translate="benefits_desc">Quick income, nutrition security, and employment opportunities.</span></li>
+                                <li><strong data-translate="stocking_density">Stocking Density:</strong> <span data-translate="stocking_desc">4-5 layers/m², 8-10 broilers/m².</span></li>
+                                <li><strong data-translate="feed_manage">Feed Management:</strong> <span data-translate="feed_desc">Provide balanced rations (Layers: 16-18% protein, Broilers: 20-22% protein).</span></li>
+                                <li><strong data-translate="biosecurity">Biosecurity:</strong> <span data-translate="biosecurity_desc">Limit visitor access, disinfect, and quarantine new stock.</span></li>
+                                <li><strong data-translate="vaccination">Vaccination:</strong> <span data-translate="vaccination_desc">Follow schedule for Marek’s, New Castle, and Gumboro disease.</span></li>
+                            </ul>
+                            <h4 class="text-xl font-semibold mb-4" data-translate="diseases_title">Common Poultry Diseases & Prevention</h4>
+                             <div class="overflow-x-auto">
+                                <table class="table-auto w-full text-sm">
+                                    <thead><tr><th data-translate="disease">Disease</th><th data-translate="signs">Clinical Signs</th><th data-translate="prevention">Prevention & Control</th></tr></thead>
+                                    <tbody>
+                                        <tr><td data-translate="nd">New Castle (ND)</td><td data-translate="nd_signs">Respiratory distress</td><td data-translate="nd_prev">Vaccination, biosecurity</td></tr>
+                                        <tr><td data-translate="gumboro">Gumboro (IBD)</td><td data-translate="gumboro_signs">Diarrhea, immunosuppression</td><td data-translate="gumboro_prev">Vaccination, hygiene</td></tr>
+                                        <tr><td data-translate="coccidiosis">Coccidiosis</td><td data-translate="coccidiosis_signs">Bloody droppings</td><td data-translate="coccidiosis_prev">In-feed coccidiostats</td></tr>
+                                        <tr><td data-translate="mareks">Marek’s Disease</td><td data-translate="mareks_signs">Paralysis, tumors</td><td data-translate="mareks_prev">Day-old vaccination</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+
+                // Poultry Page Specific
+                poultry_title: { English: "Poultry Farming", اردو: "پولٹری فارمنگ", हिन्दी: "मुर्गी पालन", ಕನ್ನಡ: "ಕೋಳಿ ಸಾಕಣೆ", मराठी: "कुक्कुटपालन" },
+                poultry_subtitle: { English: "A complete guide to housing, breeds, and health management for successful poultry farming.", اردو: "کامیاب پولٹری فارمنگ کے لیے رہائش، نسلوں اور صحت کے انتظام کے لیے ایک مکمل رہنما۔", हिन्दी: "सफल मुर्गी पालन के लिए आवास, नस्लों और स्वास्थ्य प्रबंधन पर एक संपूर्ण गाइड।", ಕನ್ನಡ: "ಯಶಸ್ವಿ ಕೋಳಿ ಸಾಕಣೆಗಾಗಿ ವಸತಿ, ತಳಿಗಳು ಮತ್ತು ಆರೋಗ್ಯ ನಿರ್ವಹಣೆಯ ಸಂಪೂರ್ಣ ಮಾರ್ಗದರ್ಶಿ.", मराठी: "यशस्वी कुक्कुटपालनासाठी गृहनिर्माण, जाती आणि आरोग्य व्यवस्थापनावर संपूर्ण मार्गदर्शक." },
+                poultry_guide_title: { English: "Poultry Management Guide", اردو: "پولٹری مینجمنٹ گائیڈ", हिन्दी: "मुर्गी पालन प्रबंधन गाइड", ಕನ್ನಡ: "ಕೋಳಿ ನಿರ್ವಹಣಾ ಮಾರ್ಗದರ್ಶಿ", मराठी: "कुक्कुटपालन व्यवस्थापन मार्गदर्शक" },
+                hover_prompt_main: { English: "Hover over a card to reveal detailed information.", اردو: "تفصیلی معلومات کے لیے کارڈ پر ہوور کریں۔", हिन्दी: "विस्तृत जानकारी प्रकट करने के लिए एक कार्ड पर होवर करें।", ಕನ್ನಡ: "ವಿವರವಾದ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸಲು ಕಾರ್ಡ್ ಮೇಲೆ ಹೋವರ್ ಮಾಡಿ.", मराठी: "तपशीलवार माहिती उघड करण्यासाठी कार्डवर होवर करा." },
+                setup_breeds_title: { English: "Farm Setup & Breeds", اردو: "فارم سیٹ اپ اور نسلیں۔", हिन्दी: "फार्म सेटअप और नस्लें", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಸೆಟಪ್ ಮತ್ತು ತಳಿಗಳು", मराठी: "फार्म सेटअप आणि जाती" },
+                ops_health_title: { English: "Operations & Health", اردو: "آپریشنز اور صحت", हिन्दी: "संचालन और स्वास्थ्य", ಕನ್ನಡ: "ಕಾರ್ಯಾಚರಣೆಗಳು ಮತ್ತು ಆರೋಗ್ಯ", मराठी: "ऑपरेशन्स आणि आरोग्य" },
+                housing_title: { English: "Housing in Different Climatic Zones", اردو: "مختلف موسمی زونز میں رہائش", हिन्दी: "विभिन्न जलवायु क्षेत्रों में आवास", ಕನ್ನಡ: "ವಿವಿಧ ಹವಾಮಾನ ವಲಯಗಳಲ್ಲಿ ವಸತಿ", मराठी: "वेगवेगळ्या हवामान झोनमध्ये गृहनिर्माण" },
+                arid_zone: { English: "Arid/Semi-arid:", اردو: "خشک/نیم خشک:", हिन्दी: "शुष्क/अर्ध-शुष्क:", ಕನ್ನಡ: "ಶುಷ್ಕ/ಅರೆ-ಶುಷ್ಕ:", मराठी: "शुष्क/अर्ध-शुष्क:" },
+                arid_desc: { English: "Use N-S oriented sheds with high vents, reflective roofs, and cooling systems.", اردو: "اونچے وینٹوں، عکاس چھتوں اور کولنگ سسٹم کے ساتھ شمال-جنوب کی سمت والے شیڈ استعمال کریں۔", हिन्दी: "उच्च वेंट, परावर्तक छतों और शीतलन प्रणालियों के साथ एन-एस उन्मुख शेड का उपयोग करें।", ಕನ್ನಡ: "ಹೆಚ್ಚಿನ ದ್ವಾರಗಳು, ಪ್ರತಿಫಲಿತ ಛಾವಣಿಗಳು ಮತ್ತು ತಂಪಾಗಿಸುವ ವ್ಯವಸ್ಥೆಗಳೊಂದಿಗೆ N-S ಆಧಾರಿತ ಶೆಡ್‌ಗಳನ್ನು ಬಳಸಿ.", मराठी: "उंच व्हेंट्स, परावर्तित छप्पर आणि शीतकरण प्रणालीसह एन-एस ओरिएंटेड शेड वापरा." },
+                humid_zone: { English: "Hot-Humid:", اردو: "گرم مرطوب:", हिन्दी: "गर्म-आर्द्र:", ಕನ್ನಡ: "ಬಿಸಿ-ತೇವಾಂಶ:", मराठी: "गरम-दमट:" },
+                humid_desc: { English: "Elevated floors on stilts with open mesh sides for maximum airflow.", اردو: "زیادہ سے زیادہ ہوا کے بہاؤ کے لیے کھلی جالی والے اطراف کے ساتھ اسٹلٹس پر بلند فرش۔", हिन्दी: "अधिकतम एयरफ्लो के लिए खुली जाली वाले किनारों के साथ स्टिल्ट पर ऊंचे फर्श।", ಕನ್ನಡ: "ಗರಿಷ್ಠ ಗಾಳಿಯ ಹರಿವಿಗಾಗಿ ತೆರೆದ ಜಾಲರಿಯ ಬದಿಗಳೊಂದಿಗೆ ಸ್ಟಿಲ್ಟ್‌ಗಳ ಮೇಲೆ ಎತ್ತರದ ಮಹಡಿಗಳು.", मराठी: "जास्तीत जास्त वायुप्रवाहासाठी खुल्या जाळीच्या बाजू असलेल्या स्टिल्ट्सवर उंच मजले." },
+                cool_zone: { English: "Cool/Temperate:", اردو: "ٹھنڈا/معتدل:", हिन्दी: "शीतल/समशीतोष्ण:", ಕನ್ನಡ: "ತಂಪು/ಸಮಶೀತೋಷ್ಣ:", मराठी: "थंड/समशीतोष्ण:" },
+                cool_desc: { English: "South-facing, insulated sheds with heating systems for winter.", اردو: "سردیوں کے لیے ہیٹنگ سسٹم کے ساتھ جنوب کی سمت، موصل شیڈ۔", हिन्दी: "सर्दियों के लिए हीटिंग सिस्टम के साथ दक्षिण-मुखी, इंसुलेटेड शेड।", ಕನ್ನಡ: "ಚಳಿಗಾಲಕ್ಕಾಗಿ ತಾಪನ ವ್ಯವಸ್ಥೆಗಳೊಂದಿಗೆ ದಕ್ಷಿಣಾಭಿಮುಖ, ನಿರೋಧಕ ಶೆಡ್‌ಗಳು.", मराठी: "हिवाळ्यासाठी हीटिंग सिस्टमसह दक्षिणाभिमुख, इन्सुलेटेड शेड." },
+                monsoon_prep: { English: "Monsoon Prep:", اردو: "مانسون کی تیاری:", हिन्दी: "मानसून की तैयारी:", ಕನ್ನಡ: "ಮಾನ್ಸೂನ್ ತಯಾರಿ:", मराठी: "मान्सूनची तयारी:" },
+                monsoon_desc: { English: "Elevate feeders, ensure dry bedding, and complete pre-monsoon vaccinations.", اردو: "فیڈر بلند کریں، خشک بستر کو یقینی بنائیں، اور مانسون سے پہلے کی ویکسینیشن مکمل کریں۔", हिन्दी: "फीडर ऊपर उठाएं, सूखा बिस्तर सुनिश्चित करें, और मानसून पूर्व टीकाकरण पूरा करें।", ಕನ್ನಡ: "ಫೀಡರ್‌ಗಳನ್ನು ಎತ್ತರಿಸಿ, ಒಣ ಹಾಸಿಗೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ಮಾನ್ಸೂನ್ ಪೂರ್ವ ವ್ಯಾಕ್ಸಿನೇಷನ್‌ಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.", मराठी: "फीडर उंच करा, कोरडी बेडिंग सुनिश्चित करा आणि मान्सूनपूर्व लसीकरण पूर्ण करा." },
+                breeds_title: { English: "Major Chicken Breeds in India", اردو: "ہندوستان میں چکن کی بڑی نسلیں۔", हिन्दी: "भारत में प्रमुख चिकन नस्लें", ಕನ್ನಡ: "ಭಾರತದಲ್ಲಿ ಪ್ರಮುಖ ಕೋಳಿ ತಳಿಗಳು", मराठी: "भारतातील प्रमुख चिकन जाती" },
+                breed_type: { English: "Breed Type", اردو: "نسل کی قسم", हिन्दी: "नस्ल का प्रकार", ಕನ್ನಡ: "ತಳಿ ಪ್ರಕಾರ", मराठी: "जातीचा प्रकार" },
+                breed_name: { English: "Name", اردو: "نام", हिन्दी: "नाम", ಕನ್ನಡ: "ಹೆಸರು", मराठी: "नाव" },
+                breed_purpose: { English: "Primary Purpose", اردو: "بنیادی مقصد", हिन्दी: "प्राथमिक उद्देश्य", ಕನ್ನಡ: "ಪ್ರಾಥಮಿಕ ಉದ್ದೇಶ", मराठी: "प्राथमिक उद्देश" },
+                breed_traits: { English: "Key Traits", اردو: "اہم خصوصیات", हिन्दी: "मुख्य लक्षण", ಕನ್ನಡ: "ಪ್ರಮುಖ ಲಕ್ಷಣಗಳು", मराठी: "मुख्य वैशिष्ट्ये" },
+                layer_breeds: { English: "Layer Breeds", اردو: "انڈے دینے والی نسلیں", हिन्दी: "लेयर नस्लें", ಕನ್ನಡ: "ಪದರ ತಳಿಗಳು", मराठी: "थर जाती" },
+                leghorn: { English: "White Leghorn", اردو: "وائٹ لی ہارن", हिन्दी: "व्हाइट लेगहॉर्न", ಕನ್ನಡ: "ವೈಟ್ ಲೆಗ್ಹಾರ್ನ್", मराठी: "पांढरा लेघॉर्न" },
+                eggs: { English: "Egg production", اردو: "انڈوں کی پیداوار", हिन्दी: "अंडा उत्पादन", ಕನ್ನಡ: "ಮೊಟ್ಟೆ ಉತ್ಪಾದನೆ", मराठी: "अंडी उत्पादन" },
+                leghorn_traits: { English: "280-320 eggs/yr", اردو: "280-320 انڈے/سال", हिन्दी: "280-320 अंडे/वर्ष", ಕನ್ನಡ: "280-320 ಮೊಟ್ಟೆಗಳು/ವರ್ಷ", मराठी: "280-320 अंडी/वर्ष" },
+                rhode_island: { English: "Rhode Island Red", اردو: "روڈ آئلینڈ ریڈ", हिन्दी: "रोड आइलैंड रेड", ಕನ್ನಡ: "ರೋಡ್ ಐಲ್ಯಾಂಡ್ ರೆಡ್", मराठी: "ऱ्होड आयलंड रेड" },
+                dual: { English: "Dual purpose", اردو: "دوہرا مقصد", हिन्दी: "दोहरा उद्देश्य", ಕನ್ನಡ: "ದ್ವಂದ್ವ ಉದ್ದೇಶ", मराठी: "दुहेरी उद्देश" },
+                rhode_island_traits: { English: "200-250 eggs/yr, hardy", اردو: "200-250 انڈے/سال، سخت جان", हिन्दी: "200-250 अंडे/वर्ष, हार्डी", ಕನ್ನಡ: "200-250 ಮೊಟ್ಟೆಗಳು/ವರ್ಷ, ಗಟ್ಟಿಮುಟ್ಟಾದ", मराठी: "200-250 अंडी/वर्ष, हार्डी" },
+                isa_brown: { English: "ISA Brown", اردو: "آئی ایس اے براؤن", हिन्दी: "आईएसए ब्राउन", ಕನ್ನಡ: "ಐಎಸ್ಎ ಬ್ರೌನ್", मराठी: "आयएसए ब्राउन" },
+                isa_brown_traits: { English: "300+ eggs/yr, docile", اردو: "300+ انڈے/سال، نرم خو", हिन्दी: "300+ अंडे/वर्ष, विनम्र", ಕನ್ನಡ: "300+ ಮೊಟ್ಟೆಗಳು/ವರ್ಷ, ಸಾಧು", मराठी: "300+ अंडी/वर्ष, docile" },
+                broiler_breeds: { English: "Broiler Breeds", اردو: "برائلر نسلیں", हिन्दी: "ब्रायलर नस्लें", ಕನ್ನಡ: "ಬ್ರೈಲರ್ ತಳಿಗಳು", मराठी: "ब्रॉयलर जाती" },
+                cobb: { English: "Cobb 500", اردو: "کوب 500", हिन्दी: "कॉब 500", ಕನ್ನಡ: "ಕಾಬ್ 500", मराठी: "कॉब 500" },
+                meat: { English: "Meat production", اردو: "گوشت کی پیداوار", हिन्दी: "मांस उत्पादन", ಕನ್ನಡ: "ಮಾಂಸ ಉತ್ಪಾದನೆ", मराठी: "मांस उत्पादन" },
+                cobb_traits: { English: "Rapid growth (2.5 kg in 6 wk)", اردو: "تیز رفتار ترقی (6 ہفتوں میں 2.5 کلوگرام)", हिन्दी: "तेजी से विकास (6 सप्ताह में 2.5 किलो)", ಕನ್ನಡ: "ವೇಗದ ಬೆಳವಣಿಗೆ (6 ವಾರಗಳಲ್ಲಿ 2.5 ಕೆಜಿ)", मराठी: "जलद वाढ (6 आठवड्यात 2.5 किलो)" },
+                vencobb: { English: "Vencobb 400", اردو: "وینکوب 400", हिन्दी: "वेनकॉब 400", ಕನ್ನಡ: "ವೆನ್ಕಾಬ್ 400", मराठी: "व्हेनकॉब 400" },
+                vencobb_traits: { English: "Good disease resistance", اردو: "بیماریوں کے خلاف اچھی مزاحمت", हिन्दी: "अच्छी रोग प्रतिरोधक क्षमता", ಕನ್ನಡ: "ಉತ್ತಮ ರೋಗ ನಿರೋಧಕತೆ", मराठी: "चांगली रोग प्रतिकारशक्ती" },
+                desi_breeds: { English: "Native/Desi", اردو: "مقامی/دیسی", हिन्दी: "देशी/देसी", ಕನ್ನಡ: "ಸ್ಥಳೀಯ/ದೇಸಿ", मराठी: "देशी/देशी" },
+                aseel: { English: "Aseel", اردو: "اصیل", हिन्दी: "असील", ಕನ್ನಡ: "ಅಸೀಲ್", मराठी: "असील" },
+                aseel_traits: { English: "Slow growth, strong immunity", اردو: "سست ترقی، مضبوط قوت مدافعت", हिन्दी: "धीमा विकास, मजबूत प्रतिरक्षा", ಕನ್ನಡ: "ನಿಧಾನಗತಿಯ ಬೆಳವಣಿಗೆ, ಬಲವಾದ ರೋಗನಿರೋಧಕ ಶಕ್ತಿ", मराठी: "हळू वाढ, मजबूत प्रतिकारशक्ती" },
+                kadaknath: { English: "Kadaknath", اردو: "کڑک ناتھ", हिन्दी: "कड़कनाथ", ಕನ್ನಡ: "ಕಡಕನಾಥ್", मराठी: "कडकनाथ" },
+                kadaknath_traits: { English: "Black flesh, high value", اردو: "سیاہ گوشت، اعلی قیمت", हिन्दी: "काला मांस, उच्च मूल्य", ಕನ್ನಡ: "ಕಪ್ಪು ಮಾಂಸ, ಹೆಚ್ಚಿನ ಮೌಲ್ಯ", मराठी: "काळे मांस, उच्च मूल्य" },
+                beginner_tips_title: { English: "Beginner Tips & Benefits", اردو: "ابتدائی تجاویز اور فوائد", हिन्दी: "शुरुआती टिप्स और लाभ", ಕನ್ನಡ: "ಆರಂಭಿಕರಿಗಾಗಿ ಸಲಹೆಗಳು ಮತ್ತು ಪ್ರಯೋಜನಗಳು", मराठी: "नवशिक्यांसाठी टिप्स आणि फायदे" },
+                benefits: { English: "Benefits:", اردو: "فوائد:", हिन्दी: "लाभ:", ಕನ್ನಡ: "ಪ್ರಯೋಜನಗಳು:", मराठी: "फायदे:" },
+                benefits_desc: { English: "Quick income, nutrition security, and employment opportunities.", اردو: "فوری آمدنی، غذائی تحفظ، اور روزگار کے مواقع۔", हिन्दी: "त्वरित आय, पोषण सुरक्षा और रोजगार के अवसर।", ಕನ್ನಡ: "ತ್ವರಿತ ಆದಾಯ, ಪೌಷ್ಟಿಕಾಂಶ ಭದ್ರತೆ ಮತ್ತು ಉದ್ಯೋಗಾವಕಾಶಗಳು.", मराठी: "त्वरित उत्पन्न, पोषण सुरक्षा आणि रोजगाराच्या संधी." },
+                stocking_density: { English: "Stocking Density:", اردو: "اسٹاکنگ کثافت:", हिन्दी: "स्टॉकिंग घनत्व:", ಕನ್ನಡ: "ದಾಸ್ತಾನು ಸಾಂದ್ರತೆ:", मराठी: "स्टॉकिंग डेन्सिटी:" },
+                stocking_desc: { English: "4-5 layers/m², 8-10 broilers/m².", اردو: "4-5 لیئرز/m²، 8-10 برائلرز/m²۔", हिन्दी: "4-5 लेयर्स/वर्ग मीटर, 8-10 ब्रॉयलर/वर्ग मीटर।", ಕನ್ನಡ: "4-5 ಲೇಯರ್‌ಗಳು/ಚ.ಮೀ, 8-10 ಬ್ರೈಲರ್‌ಗಳು/ಚ.ಮೀ.", मराठी: "4-5 थर/m², 8-10 ब्रॉयलर/m²." },
+                feed_manage: { English: "Feed Management:", اردو: "فیڈ کا انتظام:", हिन्दी: "फ़ीड प्रबंधन:", ಕನ್ನಡ: "ಫೀಡ್ ನಿರ್ವಹಣೆ:", मराठी: "फीड व्यवस्थापन:" },
+                feed_desc: { English: "Provide balanced rations (Layers: 16-18% protein, Broilers: 20-22% protein).", اردو: "متوازن راشن فراہم کریں (لیئرز: 16-18% پروٹین، برائلرز: 20-22% پروٹین)۔", हिन्दी: "संतुलित राशन प्रदान करें (लेयर्स: 16-18% प्रोटीन, ब्रॉयलर: 20-22% प्रोटीन)।", ಕನ್ನಡ: "ಸಮತೋಲಿತ ಪಡಿತರವನ್ನು ಒದಗಿಸಿ (ಲೇಯರ್‌ಗಳು: 16-18% ಪ್ರೋಟೀನ್, ಬ್ರೈಲರ್‌ಗಳು: 20-22% ಪ್ರೋಟೀನ್).", मराठी: "संतुलित रेशन द्या (थर: 16-18% प्रथिने, ब्रॉयलर: 20-22% प्रथिने)." },
+                biosecurity: { English: "Biosecurity:", اردو: "بائیو سیکیورٹی:", हिन्दी: "जैव सुरक्षा:", ಕನ್ನಡ: "ಜೈವಿಕ ಭದ್ರತೆ:", मराठी: "जैव सुरक्षा:" },
+                biosecurity_desc: { English: "Limit visitor access, disinfect, and quarantine new stock.", اردو: "زائرین کی رسائی کو محدود کریں، جراثیم کشی کریں، اور نئے اسٹاک کو قرنطینہ کریں۔", हिन्दी: "आगंतुक पहुंच सीमित करें, कीटाणुरहित करें और नए स्टॉक को क्वारंटाइन करें।", ಕನ್ನಡ: "ಸಂದರ್ಶಕರ ಪ್ರವೇಶವನ್ನು ಸೀಮಿತಗೊಳಿಸಿ, ಸೋಂಕುರಹಿತಗೊಳಿಸಿ ಮತ್ತು ಹೊಸ ಸ್ಟಾಕ್ ಅನ್ನು ಕ್ವಾರಂಟೈನ್ ಮಾಡಿ.", मराठी: "अभ्यागत प्रवेश मर्यादित करा, निर्जंतुक करा आणि नवीन स्टॉक क्वारंटाइन करा." },
+                vaccination: { English: "Vaccination:", اردو: "ویکسینیشن:", हिन्दी: "टीकाकरण:", ಕನ್ನಡ: "ವ್ಯಾಕ್ಸಿನೇಷನ್:", मराठी: "लसीकरण:" },
+                vaccination_desc: { English: "Follow schedule for Marek’s, New Castle, and Gumboro disease.", اردو: "ماریک، نیو کیسل اور گمبورو بیماری کے لیے شیڈول پر عمل کریں۔", हिन्दी: "मारेक, न्यू कैसल और गंबोरो रोग के लिए शेड्यूल का पालन करें।", ಕನ್ನಡ: "ಮಾರೆಕ್ಸ್, ನ್ಯೂ ಕ್ಯಾಸಲ್ ಮತ್ತು ಗಂಬೊರೊ ಕಾಯಿಲೆಗೆ ವೇಳಾಪಟ್ಟಿಯನ್ನು ಅನುಸರಿಸಿ.", मराठी: "मारेक, न्यू कॅसल आणि गंबोरो रोगासाठी वेळापत्रक पाळा." },
+                diseases_title: { English: "Common Poultry Diseases & Prevention", اردو: "عام پولٹری کی بیماریاں اور روک تھام", हिन्दी: "आम पोल्ट्री रोग और रोकथाम", ಕನ್ನಡ: "ಸಾಮಾನ್ಯ ಕೋಳಿ ರೋಗಗಳು ಮತ್ತು ತಡೆಗಟ್ಟುವಿಕೆ", मराठी: "सामान्य कुक्कुट रोग आणि प्रतिबंध" },
+                disease: { English: "Disease", اردو: "بیماری", हिन्दी: "रोग", ಕನ್ನಡ: "ರೋಗ", मराठी: "रोग" },
+                signs: { English: "Clinical Signs", اردو: "کلینیکل علامات", हिन्दी: "नैदानिक ​​संकेत", ಕನ್ನಡ: "ಕ್ಲಿನಿಕಲ್ ಚಿಹ್ನೆಗಳು", मराठी: "क्लिनिकल चिन्हे" },
+                prevention: { English: "Prevention & Control", اردو: "روک تھام اور کنٹرول", हिन्दी: "रोकथाम और नियंत्रण", ಕನ್ನಡ: "ತಡೆಗಟ್ಟುವಿಕೆ ಮತ್ತು ನಿಯಂತ್ರಣ", मराठी: "प्रतिबंध आणि नियंत्रण" },
+                nd: { English: "New Castle (ND)", اردو: "نیو کیسل (این ڈی)", हिन्दी: "न्यू कैसल (एनडी)", ಕನ್ನಡ: "ನ್ಯೂ ಕ್ಯಾಸಲ್ (ಎನ್‌ಡಿ)", मराठी: "न्यू कॅसल (एनडी)" },
+                nd_signs: { English: "Respiratory distress", اردو: "سانس کی تکلیف", हिन्दी: "सांस की तकलीफ", ಕನ್ನಡ: "ಉಸಿರಾಟದ ತೊಂದರೆ", मराठी: "श्वसन त्रास" },
+                nd_prev: { English: "Vaccination, biosecurity", اردو: "ویکسینیشن، بائیو سیکیورٹی", हिन्दी: "टीकाकरण, जैव सुरक्षा", ಕನ್ನಡ: "ವ್ಯಾಕ್ಸಿನೇಷನ್, ಜೈವಿಕ ಭದ್ರತೆ", मराठी: "लसीकरण, जैव सुरक्षा" },
+                gumboro: { English: "Gumboro (IBD)", اردو: "گمبورو (آئی بی ڈی)", हिन्दी: "गंबोरो (आईबीडी)", ಕನ್ನಡ: "ಗಂಬೊರೊ (ಐಬಿಡಿ)", मराठी: "गंबोरो (आयबीडी)" },
+                gumboro_signs: { English: "Diarrhea, immunosuppression", اردو: "اسہال، امیونوسوپریشن", हिन्दी: "दस्त, इम्यूनोसप्रेशन", ಕನ್ನಡ: "ಅತಿಸಾರ, ರೋಗನಿರೋಧಕ ಶಕ್ತಿ ಕುಂದುತ್ತದೆ", मराठी: "अतिसार, इम्युनोसप्रेशन" },
+                gumboro_prev: { English: "Vaccination, hygiene", اردو: "ویکسینیشن، صفائی", हिन्दी: "टीकाकरण, स्वच्छता", ಕನ್ನಡ: "ವ್ಯಾಕ್ಸಿನೇಷನ್, ನೈರ್ಮಲ್ಯ", मराठी: "लसीकरण, स्वच्छता" },
+                coccidiosis: { English: "Coccidiosis", اردو: "کوکسیڈیوسس", हिन्दी: "कोक्सीडियोसिस", ಕನ್ನಡ: "ಕೊಕ್ಸಿಡಿಯೋಸಿಸ್", मराठी: "कोक्सीडिओसिस" },
+                coccidiosis_signs: { English: "Bloody droppings", اردو: "خونی قطرے", हिन्दी: "खूनी बूंदें", ಕನ್ನಡ: "ರಕ್ತಸಿಕ್ತ ಹಿಕ್ಕೆಗಳು", मराठी: "रक्तरंजित विष्ठा" },
+                coccidiosis_prev: { English: "In-feed coccidiostats", اردو: "ان فیڈ کوکسیڈیوسٹیٹس", हिन्दी: "इन-फीड कोक्सीडियोस्टैट्स", ಕನ್ನಡ: "ಫೀಡ್‌ನಲ್ಲಿರುವ ಕೋಕ್ಸಿಡಿಯೋಸ್ಟಾಟ್‌ಗಳು", मराठी: "इन-फीड कोक्सीडिओस्टॅट्स" },
+                mareks: { English: "Marek’s Disease", اردو: "ماریک کی بیماری", हिन्दी: "मारेक रोग", ಕನ್ನಡ: "ಮಾರೆಕ್ಸ್ ಕಾಯಿಲೆ", मराठी: "मारेक रोग" },
+                mareks_signs: { English: "Paralysis, tumors", اردو: "فالج، ٹیومر", हिन्दी: "लकवा, ट्यूमर", ಕನ್ನಡ: "ಪಾರ್ಶ್ವವಾಯು, ಗೆಡ್ಡೆಗಳು", मराठी: "पक्षाघात, ट्यूमर" },
+                mareks_prev: { English: "Day-old vaccination", اردو: "ایک دن کی ویکسینیشن", हिन्दी: "एक दिन का टीकाकरण", ಕನ್ನಡ: "ದಿನದ ಹಳೆಯ ವ್ಯಾಕ್ಸಿನೇಷನ್", मराठी: "एक दिवसाचे लसीकरण" },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                localStorage.setItem('farmEaseLang', lang);
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+

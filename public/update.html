@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Latest Updates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Impressive Update Card Styles */
+        .update-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+         .update-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+        }
+        .update-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 60%);
+            z-index: 2;
+        }
+        .update-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+            z-index: 1;
+        }
+        .update-card:hover .update-card-bg {
+            transform: scale(1.05);
+        }
+        .update-card-content {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* 6. Staggered Card Animation */
+        .card-animate {
+            animation: card-entry 0.6s ease-out both;
+        }
+        .card-animate:nth-child(1) { animation-delay: 0.1s; }
+        .card-animate:nth-child(2) { animation-delay: 0.2s; }
+        .card-animate:nth-child(3) { animation-delay: 0.3s; }
+        .card-animate:nth-child(4) { animation-delay: 0.4s; }
+        .card-animate:nth-child(5) { animation-delay: 0.5s; }
+        .card-animate:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes card-entry {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="मराठी">मराठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="bg-white py-12 shadow-sm">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-green-900" data-translate="updates_title">Latest Updates</h1>
+                <p class="mt-2 text-slate-600 max-w-2xl mx-auto" data-translate="updates_subtitle">Stay informed with the latest news, schemes, and market trends.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Update Card 1 -->
+                    <div class="card-animate">
+                        <div class="update-card h-80 flex flex-col justify-end p-6">
+                            <div class="update-card-bg" style="background-image: url('anno1.jpg')"></div>
+                            <div class="update-card-content">
+                                <span class="text-xs font-semibold bg-amber-500/80 px-2 py-1 rounded-full" data-translate="update1_tag">Government Scheme</span>
+                                <h3 class="mt-4 text-xl font-semibold" data-translate="update1_title">New subsidy for drip irrigation announced</h3>
+                                <p class="mt-2 text-sm text-gray-200" data-translate="update1_desc">The central government has launched a new scheme to promote water conservation in agriculture.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Update Card 2 -->
+                    <div class="card-animate">
+                        <div class="update-card h-80 flex flex-col justify-end p-6">
+                            <div class="update-card-bg" style="background-image: url('msp.png')"></div>
+                            <div class="update-card-content">
+                                <span class="text-xs font-semibold bg-green-500/80 px-2 py-1 rounded-full" data-translate="update2_tag">Market Trend</span>
+                                <h3 class="mt-4 text-xl font-semibold" data-translate="update2_title">Significant MSP hike for 14 Kharif crops announced</h3>
+                                <p class="mt-2 text-sm text-gray-200" data-translate="update2_desc">Analysts predict a surge in demand due to the 2025-26 marketing season changes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Update Card 3 -->
+                    <div class="card-animate">
+                        <div class="update-card h-80 flex flex-col justify-end p-6">
+                            <div class="update-card-bg" style="background-image: url('rainf.jpg')"></div>
+                            <div class="update-card-content">
+                                <span class="text-xs font-semibold bg-blue-500/80 px-2 py-1 rounded-full" data-translate="update3_tag">Weather Alert</span>
+                                <h3 class="mt-4 text-xl font-semibold" data-translate="update3_title">IMD issues weather alerts for Karnataka (Sep 12-16)</h3>
+                                <p class="mt-2 text-sm text-gray-200" data-translate="update3_desc">Meteorological department issues a warning for the upcoming week, advising precautions for farmers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Update Card 4 -->
+                    <div class="card-animate">
+                        <div class="update-card h-80 flex flex-col justify-end p-6">
+                            <div class="update-card-bg" style="background-image: url('dtech.jpg')"></div>
+                            <div class="update-card-content">
+                                <span class="text-xs font-semibold bg-red-500/80 px-2 py-1 rounded-full" data-translate="update4_tag">Technology</span>
+                                <h3 class="mt-4 text-xl font-semibold" data-translate="update4_title">Drone usage in farming sees 50% increase</h3>
+                                <p class="mt-2 text-sm text-gray-200" data-translate="update4_desc">New regulations make it easier for farmers to adopt drone technology for crop monitoring and spraying.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Update Card 5 -->
+                    <div class="card-animate">
+                        <div class="update-card h-80 flex flex-col justify-end p-6">
+                            <div class="update-card-bg" style="background-image: url('sus30.png')"></div>
+                            <div class="update-card-content">
+                                <span class="text-xs font-semibold bg-indigo-500/80 px-2 py-1 rounded-full" data-translate="update5_tag">Community</span>
+                                <h3 class="mt-4 text-xl font-semibold" data-translate="update5_title">30% increase in sustainable farming practices by 2030</h3>
+                                <p class="mt-2 text-sm text-gray-200" data-translate="update5_desc">A new goal aims for a significant increase in sustainable farming methods across the nation by 2030.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Update Card 6 -->
+                    <div class="card-animate">
+                        <div class="update-card h-80 flex flex-col justify-end p-6">
+                            <div class="update-card-bg" style="background-image: url('sensor.jpg')"></div>
+                            <div class="update-card-content">
+                                <span class="text-xs font-semibold bg-teal-500/80 px-2 py-1 rounded-full" data-translate="update6_tag">Innovation</span>
+                                <h3 class="mt-4 text-xl font-semibold" data-translate="update6_title">New Soil Sensor Technology Launched</h3>
+                                <p class="mt-2 text-sm text-gray-200" data-translate="update6_desc">Breakthrough sensor technology provides real-time soil health data directly to farmers' devices.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यتने" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+                
+                // Updates Page Specific
+                updates_title: { English: "Latest Updates", اردو: "تازہ ترین اپڈیٹس", हिन्दी: "नवीनतम अपडेट", ಕನ್ನಡ: "ಇತ್ತೀಚಿನ ನವೀಕರಣಗಳು", मराठी: "नवीनतम अद्यतने" },
+                updates_subtitle: { English: "Stay informed with the latest news, schemes, and market trends.", اردو: "تازہ ترین خبروں، اسکیموں اور مارکیٹ کے رجحانات سے باخبر رہیں۔", हिन्दी: "नवीनतम समाचारों, योजनाओं और बाजार के रुझानों से अवगत रहें।", ಕನ್ನಡ: "ಇತ್ತೀಚಿನ ಸುದ್ದಿಗಳು, ಯೋಜನೆಗಳು ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಪ್ರವೃತ್ತಿಗಳೊಂದಿಗೆ ಮಾಹಿತಿ ಪಡೆಯಿರಿ.", मराठी: "नवीनतम बातम्या, योजना आणि बाजारातील ट्रेंडसह माहिती मिळवा." },
+                update1_tag: { English: "Government Scheme", اردو: "سرکاری اسکیم", हिन्दी: "सरकारी योजना", ಕನ್ನಡ: "ಸರ್ಕಾರಿ ಯೋಜನೆ", मराठी: "सरकारी योजना" },
+                update1_title: { English: "New subsidy for drip irrigation announced", اردو: "ڈرپ ایریگیشن کے لیے نئی سبسڈی کا اعلان", हिन्दी: "ड्रिप सिंचाई के लिए नई सब्सिडी की घोषणा", ಕನ್ನಡ: "ಹನಿ ನೀರಾವರಿಗೆ ಹೊಸ ಸಬ್ಸಿಡಿ ಘೋಷಣೆ", मराठी: "ठिबک सिंचनासाठी नवीन अनुदानाची घोषणा" },
+                update1_desc: { English: "The central government has launched a new scheme to promote water conservation in agriculture.", اردو: "مرکزی حکومت نے زراعت میں پانی کے تحفظ کو فروغ دینے کے لیے ایک نئی اسکیم شروع کی ہے۔", हिन्दी: "केंद्र सरकार ने कृषि में जल संरक्षण को बढ़ावा देने के लिए एक नई योजना शुरू की है।", ಕನ್ನಡ: "ಕೃಷಿಯಲ್ಲಿ ಜಲ ಸಂರಕ್ಷಣೆಯನ್ನು ಉತ್ತೇಜಿಸಲು ಕೇಂದ್ರ ಸರ್ಕಾರವು ಹೊಸ ಯೋಜನೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿದೆ.", मराठी: "केंद्र सरकारने शेतीत जलसंधारणाला चालना देण्यासाठी नवीन योजना सुरू केली आहे." },
+                update2_tag: { English: "Market Trend", اردو: "مارکیٹ کا رجحان", हिन्दी: "बाजार की प्रवृत्ति", ಕನ್ನಡ: "ಮಾರುಕಟ್ಟೆ ಪ್ರವೃತ್ತಿ", मराठी: "बाजारपेठेचा कल" },
+                update2_title: { English: "Significant MSP hike for 14 Kharif crops announced", اردو: "14 خریف فصلوں کے لیے ایم ایس پی میں نمایاں اضافہ کا اعلان", हिन्दी: "14 खरीफ फसलों के लिए एमएसपी में उल्लेखनीय वृद्धि की घोषणा", ಕನ್ನಡ: "14 ಖಾರಿಫ್ ಬೆಳೆಗಳಿಗೆ ಎಂಎಸ್‌ಪಿಯಲ್ಲಿ ಗಮನಾರ್ಹ ಏರಿಕೆ ಘೋಷಿಸಲಾಗಿದೆ", मराठी: "14 खरीप पिकांसाठी एमएसपीमध्ये लक्षणीय वाढ जाहीर" },
+                update2_desc: { English: "Analysts predict a surge in demand due to the 2025-26 marketing season changes.", اردو: "تجزیہ کار 2025-26 کے مارکیٹنگ سیزن میں تبدیلیوں کی وجہ سے مانگ میں اضافے کی پیش گوئی کرتے ہیں۔", हिन्दी: "विश्लेषकों ने 2025-26 विपणन सत्र में बदलाव के कारण मांग में वृद्धि की भविष्यवाणी की है।", ಕನ್ನಡ: "2025-26ರ ಮಾರುಕಟ್ಟೆ ಋತುವಿನ ಬದಲಾವಣೆಗಳಿಂದಾಗಿ ಬೇಡಿಕೆಯಲ್ಲಿ ಏರಿಕೆಯಾಗಲಿದೆ ಎಂದು ವಿಶ್ಲೇಷಕರು ಊಹಿಸಿದ್ದಾರೆ.", मराठी: "2025-26 विपणن हंगामातील बदलांमुळे मागणीत वाढ होण्याचा अंदाज विश्लेषकांनी वर्तवला आहे." },
+                update3_tag: { English: "Weather Alert", اردو: "موسم کا انتباہ", हिन्दी: "मौसम चेतावनी", ಕನ್ನಡ: "ಹವಾಮಾನ ಎಚ್ಚರಿಕೆ", मराठी: "हवामान सूचना" },
+                update3_title: { English: "IMD issues weather alerts for Karnataka (Sep 12-16)", اردو: "آئی ایم ڈی نے کرناٹک کے لیے موسم کا انتباہ جاری کیا (12-16 ستمبر)", हिन्दी: "आईएमडी ने कर्नाटक के लिए मौसम अलर्ट जारी किया (12-16 सितंबर)", ಕನ್ನಡ: "ಐಎಂಡಿ ಕರ್ನಾಟಕಕ್ಕೆ ಹವಾಮಾನ ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೀಡಿದೆ (ಸೆಪ್ಟೆಂಬರ್ 12-16)", मराठी: "आयएमडीने कर्नाटकसाठी हवामान सूचना जारी केल्या आहेत (12-16 सप्टेंबर)" },
+                update3_desc: { English: "Meteorological department issues a warning for the upcoming week, advising precautions for farmers.", اردو: "محکمہ موسمیات نے آئندہ ہفتے کے لیے ایک انتباہ جاری کیا ہے، جس میں کسانوں کے لیے احتیاطی تدابیر اختیار کرنے کا مشورہ دیا گیا ہے۔", हिन्दी: "मौसम विभाग ने आगामी सप्ताह के लिए चेतावनी जारी की है, जिसमें किसानों के लिए सावधानी बरतने की सलाह दी गई है।", ಕನ್ನಡ: "ಹವಾಮಾನ ಇಲಾಖೆಯು ಮುಂಬರುವ ವಾರಕ್ಕೆ ಎಚ್ಚರಿಕೆಯನ್ನು ನೀಡಿದ್ದು, ರೈತರಿಗೆ ಮುನ್ನೆಚ್ಚರಿಕೆಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳುವಂತೆ ಸಲಹೆ ನೀಡಿದೆ.", मराठी: "हवामान खात्याने आगामी आठवड्यासाठी इशारा जारी केला असून, शेतकऱ्यांसाठी खबरदारी घेण्याचा सल्ला दिला आहे." },
+                update4_tag: { English: "Technology", اردو: "ٹیکنالوجی", हिन्दी: "प्रौद्योगिकी", ಕನ್ನಡ: "ತಂತ್ರಜ್ಞಾನ", मराठी: "तंत्रज्ञान" },
+                update4_title: { English: "Drone usage in farming sees 50% increase", اردو: "کھیتی باڑی میں ڈرون کے استعمال میں 50 فیصد اضافہ", हिन्दी: "खेती में ड्रोन उपयोग में 50% की वृद्धि", ಕನ್ನಡ: "ಕೃಷಿಯಲ್ಲಿ ಡ್ರೋನ್ ಬಳಕೆಯಲ್ಲಿ 50% ಹೆಚ್ಚಳ", मराठी: "शेतीत ड्रोन वापरामध्ये ५०% वाढ" },
+                update4_desc: { English: "New regulations make it easier for farmers to adopt drone technology for crop monitoring and spraying.", اردو: "نئے ضوابط کسانوں کے لیے فصلوں کی نگرانی اور اسپرے کے لیے ڈرون ٹیکنالوجی اپنانا آسان بناتے ہیں۔", हिन्दी: "नए नियम किसानों के लिए फसल निगरानी और छिड़काव के लिए ड्रोन तकनीक अपनाना आसान बनाते हैं।", ಕನ್ನಡ: "ಹೊಸ ನಿಯಮಗಳು ರೈತರಿಗೆ ಬೆಳೆ ಮೇಲ್ವಿಚಾರಣೆ ಮತ್ತು ಸಿಂಪಡಣೆಗಾಗಿ ಡ್ರೋನ್ ತಂತ್ರಜ್ಞಾನವನ್ನು ಅಳವಡಿಸಿಕೊಳ್ಳುವುದನ್ನು ಸುಲಭಗೊಳಿಸುತ್ತವೆ.", मराठी: "नवीन नियमांमुळे शेतकऱ्यांना पीक निरीक्षण आणि फवारणीसाठी ड्रोन तंत्रज्ञान स्वीकारणे सोपे झाले आहे." },
+                update5_tag: { English: "Community", اردو: "برادری", हिन्दी: "समुदाय", ಕನ್ನಡ: "ಸಮುದಾಯ", मराठी: "समुदाय" },
+                update5_title: { English: "30% increase in sustainable farming practices by 2030", اردو: "2030 تک پائیدار کاشتکاری کے طریقوں میں 30 فیصد اضافہ", हिन्दी: "2030 तक टिकाऊ कृषि पद्धतियों में 30% की वृद्धि", ಕನ್ನಡ: "2030 ರ ವೇಳೆಗೆ ಸುಸ್ಥಿರ ಕೃಷಿ ಪದ್ಧತಿಗಳಲ್ಲಿ 30% ಹೆಚ್ಚಳ", मराठी: "2030 पर्यंत शाश्वत शेती पद्धतींमध्ये 30% वाढ" },
+                update5_desc: { English: "A new goal aims for a significant increase in sustainable farming methods across the nation by 2030.", اردو: "ایک نئے مقصد کا ہدف 2030 تک ملک بھر میں پائیدار کاشتکاری کے طریقوں میں نمایاں اضافہ کرنا ہے۔", हिन्दी: "एक नए लक्ष्य का उद्देश्य 2030 तक देश भर में टिकाऊ कृषि पद्धतियों में उल्लेखनीय वृद्धि करना है।", ಕನ್ನಡ: "2030 ರ ವೇಳೆಗೆ ರಾಷ್ಟ್ರದಾದ್ಯಂತ ಸುಸ್ಥಿರ ಕೃಷಿ ವಿಧಾನಗಳಲ್ಲಿ ಗಮನಾರ್ಹ ಹೆಚ್ಚಳವನ್ನು ಹೊಂದುವುದು ಹೊಸ ಗುರಿಯಾಗಿದೆ.", मराठी: "2030 पर्यंत देशभरात शाश्वत शेती पद्धतींमध्ये लक्षणीय वाढ करण्याचे नवीन ध्येय आहे." },
+                update6_tag: { English: "Innovation", اردو: "جدت", हिन्दी: "नवाचार", ಕನ್ನಡ: "ನಾವೀನ್ಯತೆ", मराठी: "नावीन्य" },
+                update6_title: { English: "New Soil Sensor Technology Launched", اردو: "نئی مٹی سینسر ٹیکنالوجی کا آغاز", हिन्दी: "नई मृदा सेंसर तकनीक लॉन्च की गई", ಕನ್ನಡ: "ಹೊಸ ಮಣ್ಣಿನ ಸಂವೇದಕ ತಂತ್ರಜ್ಞಾನವನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ", मराठी: "नवीन मृदा सेन्सर तंत्रज्ञान लॉन्च केले" },
+                update6_desc: { English: "Breakthrough sensor technology provides real-time soil health data directly to farmers' devices.", اردو: "جدید سینسر ٹیکنالوجی کسانوں کے آلات پر براہ راست حقیقی وقت میں مٹی کی صحت کا ڈیٹا فراہم کرتی ہے۔", हिन्दी: "ब्रेकथ्रू सेंसर तकनीक किसानों के उपकरणों पर सीधे वास्तविक समय में मिट्टी के स्वास्थ्य का डेटा प्रदान करती है।", ಕನ್ನಡ: "ಬ್ರೇಕ್ಥ್ರೂ ಸಂವೇದಕ ತಂತ್ರಜ್ಞಾನವು ರೈತರ ಸಾಧನಗಳಿಗೆ ನೇರವಾಗಿ ನೈಜ-ಸಮಯದ ಮಣ್ಣಿನ ಆರೋಗ್ಯ ಡೇಟಾವನ್ನು ಒದಗಿಸುತ್ತದೆ.", मराठी: "ब्रेकथ्रू सेन्सर तंत्रज्ञान थेट शेतकऱ्यांच्या उपकरणांवर रिअल-टाइम माती आरोग्य डेटा प्रदान करते." },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                localStorage.setItem('farmEaseLang', lang);
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+            
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Fishery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Fish Card Hover Effect */
+        .fish-card {
+             transition: all 0.4s ease;
+             cursor: pointer;
+        }
+        .fish-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+        .fish-card-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out 0.1s, padding-top 0.5s ease-in-out;
+        }
+        .fish-card:hover .fish-card-details {
+            max-height: 1200px; /* Large value for content */
+            opacity: 1;
+            padding-top: 1.5rem;
+        }
+
+
+        /* 6. Impressive Tab Interface */
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button.active {
+            color: #166534; /* Forest Green */
+            border-bottom-color: #f59e0b; /* Amber */
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 7. Expandable Info Card */
+        .info-card {
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .info-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .info-card-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out 0.1s, margin-top 0.5s ease-in-out;
+        }
+        .info-card:hover .info-card-details {
+            max-height: 1000px; /* Large value to allow content to expand */
+            opacity: 1;
+            margin-top: 1.5rem; /* Add space when revealed */
+        }
+
+        /* Page Load Animation */
+        main {
+            animation: page-entry 0.7s ease-out both;
+        }
+        @keyframes page-entry {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="मराठी">मराठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="relative bg-cover bg-center py-20">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('fisback.png'); z-index: -1;"></div>
+            <div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white" data-translate="fishery_title">Fishery Guidance</h1>
+                <p class="mt-4 text-gray-200 max-w-2xl mx-auto" data-translate="fishery_subtitle">Explore detailed information on ornamental and food fishes.</p>
+            </div>
+        </section>
+
+        <!-- Aquaculture Classifications Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold text-green-900" data-translate="aq_class_title">Aquaculture Classifications</h2>
+                    <p class="mt-4 text-gray-600" data-translate="aq_class_desc">The aquaculture industry recognizes this fundamental division based on purpose.</p>
+                    <div class="mt-6 flex flex-col md:flex-row justify-center items-center gap-8">
+                        <div class="text-center p-6 bg-gray-50 rounded-lg">
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="aq_class_orna_title">Ornamental Aquaculture (Aquariculture)</h3>
+                            <p class="mt-2 text-gray-600" data-translate="aq_class_orna_desc">Culture of attractive, colorful fish for aesthetic purposes.</p>
+                        </div>
+                        <div class="text-center p-6 bg-gray-50 rounded-lg">
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="aq_class_food_title">Food Fish Aquaculture (Pisciculture)</h3>
+                            <p class="mt-2 text-gray-600" data-translate="aq_class_food_desc">Commercial breeding of fish primarily for food production.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Tab Buttons -->
+                <div class="border-b border-gray-200 mb-12">
+                    <div class="flex justify-center -mb-px space-x-8">
+                        <button class="tab-button text-lg font-semibold py-4 px-1 active" data-tab="ornamental" data-translate="tab_ornamental">Ornamental Fishes</button>
+                        <button class="tab-button text-lg font-semibold py-4 px-1" data-tab="food" data-translate="tab_food">Food Fishes (Table Fishes)</button>
+                    </div>
+                </div>
+
+                <!-- Tab Content -->
+                <div>
+                    <!-- Ornamental Fishes Content -->
+                    <div id="ornamental" class="tab-content active">
+                        <div class="space-y-12">
+                            <div class="info-card bg-white rounded-lg shadow-lg p-8 border border-gray-100">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-2xl font-bold text-green-800" data-translate="orna_char_title">Characteristics & Market Dynamics</h3>
+                                    <span class="text-sm text-gray-500 hidden md:block" data-translate="back no-underline"><h1>...</h1></span>
+                                </div>
+                                <div class="info-card-details">
+                                    <div class="grid md:grid-cols-2 gap-8 pt-6 border-t mt-6">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-green-900 mb-2" data-translate="orna_char_subtitle">Characteristics</h4>
+                                            <ul class="space-y-2 text-gray-600">
+                                                <li><strong data-translate="purpose">Purpose:</strong> <span data-translate="orna_purpose_desc">Decorative, aesthetic, and hobby purposes.</span></li>
+                                                <li><strong data-translate="market">Market:</strong> <span data-translate="orna_market_desc">Pet trade, aquarium hobbyists, and collectors.</span></li>
+                                                <li><strong data-translate="value">Value:</strong> <span data-translate="orna_value_desc">Sold individually at premium prices based on rarity, color, and health.</span></li>
+                                                <li><strong data-translate="scale">Production Scale:</strong> <span data-translate="orna_scale_desc">Can be done in smaller spaces with lower investment.</span></li>
+                                                <li><strong data-translate="species">Species Examples:</strong> <span data-translate="orna_species_desc">Guppies, goldfish, angelfish, tetras, barbs, mollies, platys.</span></li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-green-900 mb-2" data-translate="orna_market_dynamics_title">Market Dynamics</h4>
+                                             <ul class="space-y-2 text-gray-600">
+                                                <li><span data-translate="orna_market_1">Global trade worth over <strong>$15 billion</strong>.</span></li>
+                                                <li><span data-translate="orna_market_2">Over <strong>1,800 species</strong> available in the market.</span></li>
+                                                <li><span data-translate="orna_market_3"><strong>90%</strong> of freshwater ornamental fish are captive-bred.</span></li>
+                                                <li><span data-translate="orna_market_4">India exports about <strong>210 indigenous</strong> ornamental species.</span></li>
+                                                <li><span data-translate="orna_market_5">Growing at <strong>14% annually</strong> in India.</span></li>
+                                             </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="text-center text-2xl font-bold text-green-900 pt-8" data-translate="popular_orna_species">Popular Species</h3>
+                             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                <!-- Guppy Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="guppy.png" alt="Guppy" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="guppy_name">GUPPY (Poecilia reticulata)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="ornamental">Ornamental</span></p>
+                                                <p><strong data-translate="size">Size:</strong> 1.5-2.5 inches</p>
+                                                <p><strong data-translate="ph_range">pH Range:</strong> 6.8-7.8</p>
+                                                <p><strong data-translate="temperature">Temperature:</strong> 74-82°F</p>
+                                                <p><strong data-translate="diet">Diet:</strong> <span data-translate="omnivorous">Omnivorous</span></p>
+                                                <p><strong data-translate="breeding">Breeding:</strong> <span data-translate="livebearer">Livebearer</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Molly Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="molly.png.png" alt="Molly" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="molly_name">MOLLY (Poecilia species)</h3>
+                                         <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="ornamental">Ornamental</span></p>
+                                                <p><strong data-translate="size">Size:</strong> 3-5 inches</p>
+                                                <p><strong data-translate="ph_range">pH Range:</strong> 7.0-8.5</p>
+                                                <p><strong data-translate="temperature">Temperature:</strong> 68-82°F</p>
+                                                <p><strong data-translate="diet">Diet:</strong> <span data-translate="omni_herbi">Omnivorous (Herbivorous tendency)</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <!-- Goldfish Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="gol.png" alt="Goldfish" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="goldfish_name">GOLDFISH (Carassius auratus)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="orna_cold">Ornamental (Cold-water)</span></p>
+                                                <p><strong data-translate="size">Size:</strong> 6-14 inches</p>
+                                                <p><strong data-translate="ph_range">pH Range:</strong> 6.5-8.4</p>
+                                                <p><strong data-translate="temperature">Temperature:</strong> 65-75°F</p>
+                                                <p><strong data-translate="diet">Diet:</strong> <span data-translate="omnivorous">Omnivorous</span></p>
+                                                <p class="text-red-600 font-bold" data-translate="goldfish_note">Requires powerful filtration!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Arowana Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="arowana.png" alt="Arowana" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="arowana_name">AROWANA (Scleropages species)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="large_predator">Large Predator</span></p>
+                                                <p><strong data-translate="size">Size:</strong> 24-36 inches</p>
+                                                <p><strong data-translate="ph_range">pH Range:</strong> 6.5-7.5</p>
+                                                <p><strong data-translate="temperature">Temperature:</strong> 75-82°F</p>
+                                                <p><strong data-translate="diet">Diet:</strong> <span data-translate="carnivorous">Carnivorous</span></p>
+                                                <p class="text-red-600 font-bold" data-translate="arowana_note">Excellent jumper, secure lid needed!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Axolotl Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="axolots.png" alt="Axolotl" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="axolotl_name">AXOLOTL (Ambystoma mexicanum)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="amphibian">Aquatic Amphibian</span></p>
+                                                <p><strong data-translate="size">Size:</strong> 8-12 inches</p>
+                                                <p><strong data-translate="ph_range">pH Range:</strong> 6.5-8.0</p>
+                                                <p><strong data-translate="temperature">Temperature:</strong> 60-68°F</p>
+                                                <p><strong data-translate="diet">Diet:</strong> <span data-translate="carnivorous">Carnivorous</span></p>
+                                                <p class="text-red-600 font-bold" data-translate="axolotl_note">Chiller essential in India!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Food Fishes Content -->
+                    <div id="food" class="tab-content">
+                         <div class="space-y-12">
+                            <div class="info-card bg-white rounded-lg shadow-lg p-8 border border-gray-100">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-2xl font-bold text-green-800" data-translate="food_char_title">Characteristics & Market Dynamics</h3>
+                                    <span class="text-sm text-gray-500 hidden md:block" data-translate="back no-underline"><h1>...</h1></span>
+                                </div>
+                                <div class="info-card-details">
+                                    <div class="grid md:grid-cols-2 gap-8 pt-6 border-t mt-6">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-green-900 mb-2" data-translate="food_char_subtitle">Characteristics</h4>
+                                            <ul class="space-y-2 text-gray-600">
+                                                <li><strong data-translate="purpose">Purpose:</strong> <span data-translate="food_purpose_desc">Human consumption and nutrition.</span></li>
+                                                <li><strong data-translate="market">Market:</strong> <span data-translate="food_market_desc">Food industry, restaurants, retail food markets.</span></li>
+                                                <li><strong data-translate="value">Value:</strong> <span data-translate="food_value_desc">Sold in bulk quantities by weight.</span></li>
+                                                <li><strong data-translate="scale">Production Scale:</strong> <span data-translate="food_scale_desc">Requires larger water bodies and higher investment.</span></li>
+                                                <li><strong data-translate="species">Species Examples:</strong> <span data-translate="food_species_desc">Tilapia, catfish, salmon, trout, carp, rohu.</span></li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-green-900 mb-2" data-translate="market_dynamics">Market Dynamics</h4>
+                                             <ul class="space-y-2 text-gray-600">
+                                                <li data-translate="food_market_1">Focus on high-protein species for nutrition</li>
+                                                <li data-translate="food_market_2">Mass production for food security</li>
+                                                <li data-translate="food_market_3">Integration with agricultural waste management</li>
+                                                <li data-translate="food_market_4">Emphasis on growth rate and feed conversion efficiency</li>
+                                             </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="text-center text-2xl font-bold text-green-900 pt-8" data-translate="popular_food_species">Popular Species</h3>
+                             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                <!-- Tilapia Card -->
+                                 <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="tilapia.png" alt="Tilapia" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="tilapia_name">TILAPIA (Oreochromis niloticus)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="food_fish">Food Fish</span></p>
+                                                <p><strong data-translate="major_states">Major States:</strong> <span data-translate="tilapia_states">AP, WB, MH, TN</span></p>
+                                                <p><strong data-translate="total_prod">Total Production:</strong> ~70,000 MT</p>
+                                                <h3><strong data-translate="seed_source">Seed Source:</strong> <a href=" https://m.indiamart.com/aamin-fish-seed/?pos=1&kwd=tilapia%20seeds&tags=rk:A||||prc:1|dtp:p||sv:M|rsf:gd|ri:M_A_NA_NP-|-res:RC3|ktp:N0|stype:attr=1|mtp:S|prpfl:1|wc:2|lcf:-1|qr_nm:gd|cs:17061|com-cf:nl|ptrs:na|mc:177139|cat:8|qry_typ:P|lang:en|flavl:3|qrd:250915|mrd:250915|prdt:250915|qcr:1|qm:o|msf:ls|gli:G0I1|ic:Bengaluru " class="text-amber-600 hover:underline">IndiaMart<h3></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Pangasius Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="penga.png" alt="Pangasius" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="pangasius_name">PANGASIUS (Pangasianodon hypophthalmus)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="exotic">EXOTIC</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="food_fish">Food Fish</span></p>
+                                                <p><strong data-translate="largest_prod">Largest Producer:</strong> <span data-translate="andhra_pradesh">Andhra Pradesh</span></p>
+                                                <p><strong data-translate="total_prod_2018">2018 Production:</strong> 855,500 MT</p>
+                                                <p><strong data-translate="seed_source">Seed Source:</strong> <a href="#" class="text-amber-600 hover:underline">IndiaMart</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mrigal Card -->
+                                <div class="fish-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                                    <img src="margin.png" alt="Mrigal" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-green-800" data-translate="mrigal_name">MRIGAL (Cirrhinus mrigala)</h3>
+                                        <div class="fish-card-details">
+                                            <div class="border-t mt-4 pt-4 text-left space-y-1">
+                                                <p><strong data-translate="native_status">Native Status:</strong> <span data-translate="native">NATIVE</span></p>
+                                                <p><strong data-translate="category">Category:</strong> <span data-translate="food_fish">Food Fish</span></p>
+                                                <p><strong data-translate="natural_range">Natural Range:</strong> <span data-translate="mrigal_range">Ganga, Brahmaputra rivers</span></p>
+                                                <p><strong data-translate="farming_method">Farming Method:</strong> <span data-translate="polyculture">Polyculture</span></p>
+                                                <p><strong data-translate="seed_source">Seed Source:</strong> <a href="#" class="text-amber-600 hover:underline">IndiaMart</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Special Considerations Section -->
+        <section class="py-16 bg-green-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-green-900 text-center" data-translate="special_considerations_title">Special Considerations for Indian Aquarists</h2>
+                    <div class="mt-8 grid md:grid-cols-3 gap-8 text-center">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <i class="fas fa-thermometer-half text-3xl text-amber-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="climate_title">Climate Adaptations</h3>
+                            <p class="mt-2 text-gray-600 text-sm" data-translate="climate_desc">Most ornamentals adapt well. Goldfish and Axolotls require cooling systems. Power backups are essential for temperature-sensitive species.</p>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-md">
+                            <i class="fas fa-balance-scale text-3xl text-amber-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="legal_title">Legal & Ethical</h3>
+                            <p class="mt-2 text-gray-600 text-sm" data-translate="legal_desc">Alligator Gar is prohibited. Native carps are for commercial farming. Always check state-specific laws and CITES regulations.</p>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-md">
+                            <i class="fas fa-rupee-sign text-3xl text-amber-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800" data-translate="economic_title">Economic Factors</h3>
+                            <p class="mt-2 text-gray-600 text-sm" data-translate="economic_desc">Factor in setup and operating costs, especially for chillers. Many ornamental species are now bred locally, improving availability.</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+
+                // Fishery Page Specific
+                fishery_title: { English: "Fishery Guidance", اردو: "ماہی گیری کی رہنمائی", हिन्दी: "मत्स्य पालन मार्गदर्शन", ಕನ್ನಡ: "ಮೀನುಗಾರಿಕೆ ಮಾರ್ಗದರ್ಶನ", मराठी: "मत्स्यपालन मार्गदर्शन" },
+                fishery_subtitle: { English: "Explore detailed information on ornamental and food fishes.", اردو: "آرائشی اور کھانے کی مچھلیوں کے بارے میں تفصیلی معلومات دریافت کریں۔", हिन्दी: "सजावटी और खाद्य मछलियों पर विस्तृत जानकारी देखें।", ಕನ್ನಡ: "ಅಲಂಕಾರಿಕ ಮತ್ತು ಆಹಾರ ಮೀನುಗಳ ಬಗ್ಗೆ ವಿವರವಾದ ಮಾಹಿತಿಯನ್ನು ಅನ್ವೇಷಿಸಿ.", मराठी: "शोभिवंत आणि खाद्य माशांवर तपशीलवार माहिती एक्सप्लोर करा." },
+                aq_class_title: { English: "Aquaculture Classifications", اردو: "آبی زراعت کی درجہ بندی", हिन्दी: "जलकृषि वर्गीकरण", ಕನ್ನಡ: "ಜಲಕೃಷಿ ವರ್ಗೀಕರಣಗಳು", मराठी: "जलकृषी वर्गीकरण" },
+                aq_class_desc: { English: "The aquaculture industry recognizes this fundamental division based on purpose.", اردو: "آبی زراعت کی صنعت اس بنیادی تقسیم کو مقصد کی بنیاد پر تسلیم کرتی ہے۔", हिन्दी: "जलकृषि उद्योग उद्देश्य के आधार पर इस मौलिक विभाजन को मान्यता देता है।", ಕನ್ನಡ: "ಜಲಕೃಷಿ ಉದ್ಯಮವು ಉದ್ದೇಶವನ್ನು ಆಧರಿಸಿ ಈ ಮೂಲಭೂತ ವಿಭಾಗವನ್ನು ಗುರುತಿಸುತ್ತದೆ.", मराठी: "जलकृषी उद्योग उद्देशानुसार या मूलभूत विभाजनाला ओळखतो." },
+                aq_class_orna_title: { English: "Ornamental Aquaculture (Aquariculture)", اردو: "آرائشی آبی زراعت (ایکواریکلچر)", हिन्दी: "सजावटी जलकृष (एक्वाकल्चर)", ಕನ್ನಡ: "ಅಲಂಕಾರಿಕ ಜಲಕೃಷಿ (ಅಕ್ವೇರಿಕಲ್ಚರ್)", मराठी: "शोभिवंत जलकृषी (एक्वाकल्चर)" },
+                aq_class_orna_desc: { English: "Culture of attractive, colorful fish for aesthetic purposes.", اردو: "جمالیاتی مقاصد کے لیے پرکشش، رنگین مچھلیوں کی پرورش۔", हिन्दी: "सौंदर्य प्रयोजनों के लिए आकर्षक, रंगीन मछली का संवर्धन।", ಕನ್ನಡ: "ಸೌಂದರ್ಯದ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಆಕರ್ಷಕ, ವರ್ಣರಂಜಿತ ಮೀನುಗಳ ಸಾಕಣೆ.", मराठी: "सौंदर्याच्या उद्देशाने आकर्षक, रंगीबेरंगी माशांचे संवर्धन." },
+                aq_class_food_title: { English: "Food Fish Aquaculture (Pisciculture)", اردو: "خوراکی مچھلی کی آبی زراعت (پسی کلچر)", हिन्दी: "खाद्य मछली जलकृषि (मत्स्य पालन)", ಕನ್ನಡ: "ಆಹಾರ ಮೀನು ಜಲಕೃಷಿ (ಪಿಸಿಕಲ್ಚರ್)", मराठी: "खाद्य मासे जलकृषी (मत्स्यपालन)" },
+                aq_class_food_desc: { English: "Commercial breeding of fish primarily for food production.", اردو: "بنیادی طور پر خوراک کی پیداوار کے لیے مچھلی کی تجارتی افزائش۔", हिन्दी: "मुख्य रूप से खाद्य उत्पादन के लिए मछली का वाणिज्यिक प्रजनन।", ಕನ್ನಡ: "ಪ್ರಾಥಮಿಕವಾಗಿ ಆಹಾರ ಉತ್ಪಾದನೆಗಾಗಿ ಮೀನುಗಳ ವಾಣಿಜ್ಯ ತಳಿ.", मराठी: "मुख्यतः अन्न उत्पादनासाठी माशांचे व्यावसायिक प्रजनन." },
+                tab_ornamental: { English: "Ornamental Fishes", اردو: "آرائشی مچھلیاں", हिन्दी: "सजावटी मछलियाँ", ಕನ್ನಡ: "ಅಲಂಕಾರಿಕ ಮೀನುಗಳು", मराठी: "शोभिवंत मासे" },
+                tab_food: { English: "Food Fishes (Table Fishes)", اردو: "خوراکی مچھلیاں (ٹیبل فِش)", हिन्दी: "खाद्य मछलियाँ (टेबल फिश)", ಕನ್ನಡ: "ಆಹಾರ ಮೀನುಗಳು (ಟೇಬಲ್ ಮೀನುಗಳು)", मराठी: "खाद्य मासे (टेबल फिश)" },
+                hover_prompt: { English: "(Hover to see details)", اردو: "(تفصیلات دیکھنے کے لیے ہوور کریں)", हिन्दी: "(विवरण देखने के लिए होवर करें)", ಕನ್ನಡ: "(ವಿವರಗಳನ್ನು ನೋಡಲು ಹೋವರ್ ಮಾಡಿ)", मराठी: "(तपशील पाहण्यासाठी होवर करा)" },
+                purpose: { English: "Purpose:", اردو: "مقصد:", हिन्दी: "उद्देश्य:", ಕನ್ನಡ: "ಉದ್ದೇಶ:", मराठी: "उद्देश:" },
+                market: { English: "Market:", اردو: "مارکیٹ:", हिन्दी: "बाजार:", ಕನ್ನಡ: "ಮಾರುಕಟ್ಟೆ:", मराठी: "बाजारपेठ:" },
+                value: { English: "Value:", اردو: "قدر:", हिन्दी: "मूल्य:", ಕನ್ನಡ: "ಮೌಲ್ಯ:", मराठी: "मूल्य:" },
+                species: { English: "Species Examples:", اردو: "نسل کی مثالیں:", हिन्दी: "प्रजाति उदाहरण:", ಕನ್ನಡ: "ಪ್ರಭೇದ ಉದಾಹರಣೆಗಳು:", मराठी: "प्रजाती उदाहरणे:" },
+                scale: { English: "Production Scale:", اردو: "پیداوار کا پیمانہ:", हिन्दी: "उत्पादन पैमाना:", ಕನ್ನಡ: "ಉತ್ಪಾದನಾ ಪ್ರಮಾಣ:", मराठी: "उत्पादन प्रमाण:" },
+                market_dynamics: { English: "Market Dynamics", اردو: "مارکیٹ کی حرکیات", हिन्दी: "बाजार की गतिशीलता", ಕನ್ನಡ: "ಮಾರುಕಟ್ಟೆ ಡೈನಾಮಿಕ್ಸ್", मराठी: "बाजार गतिशीलता" },
+                orna_char_title: { English: "Characteristics & Market Dynamics", اردو: "خصوصیات اور مارکیٹ کی حرکیات", हिन्दी: "विशेषताएँ और बाजार की गतिशीलता", ಕನ್ನಡ: "ಗುಣಲಕ್ಷಣಗಳು ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಡೈನಾಮಿಕ್ಸ್", मराठी: "वैशिष्ट्ये आणि बाजार गतिशीलता" },
+                orna_char_subtitle: { English: "Characteristics", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ಗುಣಲಕ್ಷಣಗಳು", मराठी: "वैशिष्ट्ये" },
+                orna_purpose_desc: { English: "Decorative, aesthetic, and hobby purposes.", اردو: "آرائشی، جمالیاتی اور شوق کے مقاصد۔", हिन्दी: "सजावटी, सौंदर्य और शौक के उद्देश्य।", ಕನ್ನಡ: "ಅಲಂಕಾರಿಕ, ಸೌಂದರ್ಯ ಮತ್ತು ಹವ್ಯಾಸದ ಉದ್ದೇಶಗಳು.", मराठी: "सजावटी, सौंदर्य आणि छंदांचे उद्देश." },
+                orna_market_desc: { English: "Pet trade, aquarium hobbyists, and collectors.", اردو: "پالتو جانوروں کی تجارت، ایکویریم کے شوقین اور جمع کرنے والے۔", हिन्दी: "पालतू व्यापार, एक्वैरियम के शौकीन और संग्राहक।", ಕನ್ನಡ: "ಸಾಕುಪ್ರಾಣಿ ವ್ಯಾಪಾರ, ಅಕ್ವೇರಿಯಂ ಹವ್ಯಾಸಿಗಳು ಮತ್ತು ಸಂಗ್ರಾಹಕರು.", मराठी: "पाळीव प्राणी व्यापार, मत्स्यालय छंद आणि संग्राहक." },
+                orna_value_desc: { English: "Sold individually at premium prices based on rarity, color, and health.", اردو: "نایابیت، رنگ اور صحت کی بنیاد پر پریمیم قیمتوں پر انفرادی طور پر فروخت کیا جاتا ہے۔", हिन्दी: "दुर्लभता, रंग पैटर्न और स्वास्थ्य के आधार पर प्रीमियम कीमतों पर व्यक्तिगत रूप से बेचा जाता है।", ಕನ್ನಡ: "ವಿರಳತೆ, ಬಣ್ಣದ ಮಾದರಿಗಳು ಮತ್ತು ಆರೋಗ್ಯವನ್ನು ಆಧರಿಸಿ ಪ್ರೀಮಿಯಂ ಬೆಲೆಗಳಲ್ಲಿ ಪ್ರತ್ಯೇಕವಾಗಿ ಮಾರಾಟ ಮಾಡಲಾಗುತ್ತದೆ.", मराठी: "दुर्मिळता, रंग नमुने आणि आरोग्यावर आधारित प्रीमियम किमतींवर वैयक्तिकरित्या विकले जाते." },
+                orna_scale_desc: { English: "Can be done in smaller spaces with lower investment.", اردو: "کم سرمایہ کاری کے ساتھ چھوٹی جگہوں پر کیا جا سکتا ہے۔", हिन्दी: "कम निवेश के साथ छोटी जगहों पर किया जा सकता है।", ಕನ್ನಡ: "ಕಡಿಮೆ ಹೂಡಿಕೆಯೊಂದಿಗೆ ಸಣ್ಣ ಸ್ಥಳಗಳಲ್ಲಿ ಮಾಡಬಹುದು.", मराठी: "कमी गुंतवणुकीसह लहान जागेत करता येते." },
+                orna_species_desc: { English: "Guppies, goldfish, angelfish, tetras, barbs, mollies, platys.", اردو: "گپیز، گولڈ فش، اینجل فش، ٹیٹرا، باربس، مولیز، پلیٹیز۔", हिन्दी: "गप्पी, सुनहरीमछली, एंजेलफिश, टेट्रा, बार्ब्स, मॉली, प्लेटी।", ಕನ್ನಡ: "ಗಪ್ಪಿಗಳು, ಗೋಲ್ಡ್ ಫಿಷ್, ಏಂಜೆಲ್ ಫಿಶ್, ಟೆಟ್ರಾಗಳು, ಬಾರ್ಬ್ಗಳು, ಮೊಲ್ಲಿಗಳು, ಪ್ಲಾಟಿಗಳು.", मराठी: "गप्पी, गोल्डफिश, एन्जलफिश, टेट्रा, बार्ब्स, मॉली, प्लॅटी." },
+                orna_market_dynamics_title: { English: "Market Dynamics", اردو: "مارکیٹ کی حرکیات", हिन्दी: "बाजार की गतिशीलता", ಕನ್ನಡ: "ಮಾರುಕಟ್ಟೆ ಡೈನಾಮಿಕ್ಸ್", मराठी: "बाजार गतिशीलता" },
+                orna_market_1: { English: "Global trade worth over $15 billion.", اردو: "15 بلین ڈالر سے زیادہ کی عالمی تجارت۔", हिन्दी: "15 अरब डॉलर से अधिक का वैश्विक व्यापार।", ಕನ್ನಡ: "15 ಬಿಲಿಯನ್ ಡಾಲರ್‌ಗಿಂತ ಹೆಚ್ಚಿನ ಮೌಲ್ಯದ ಜಾಗತಿಕ ವ್ಯಾಪಾರ.", मराठी: "15 अब्ज डॉलर्सपेक्षा जास्त किमतीचा जागतिक व्यापार." },
+                orna_market_2: { English: "Over 1,800 species available in the market.", اردو: "مارکیٹ میں 1,800 سے زیادہ اقسام دستیاب ہیں۔", हिन्दी: "बाजार में 1,800 से अधिक प्रजातियाँ उपलब्ध हैं।", ಕನ್ನಡ: "ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ 1,800 ಕ್ಕೂ ಹೆಚ್ಚು ಪ್ರಭೇದಗಳು ಲಭ್ಯವಿದೆ.", मराठी: "बाजारात 1,800 पेक्षा जास्त प्रजाती उपलब्ध आहेत." },
+                orna_market_3: { English: "90% of freshwater ornamental fish are captive-bred.", اردو: "90% میٹھے پانی کی آرائشی مچھلیاں قید میں پالی جاتی ہیں۔", हिन्दी: "90% मीठे पानी की सजावटी मछलियाँ कैद में पैदा की जाती हैं।", ಕನ್ನಡ: "90% ಸಿಹಿನೀರಿನ ಅಲಂಕಾರಿಕ ಮೀನುಗಳನ್ನು ಸೆರೆಯಲ್ಲಿ ಬೆಳೆಸಲಾಗುತ್ತದೆ.", मराठी: "90% गोड्या पाण्यातील शोभिवंत मासे बंदिवासात पैदास केलेले असतात." },
+                orna_market_4: { English: "India exports about 210 indigenous ornamental species.", اردو: "ہندوستان تقریباً 210 مقامی آرائشی اقسام برآمد کرتا ہے۔", हिन्दी: "भारत लगभग 210 स्वदेशी सजावटी प्रजातियों का निर्यात करता है।", ಕನ್ನಡ: "ಭಾರತವು ಸುಮಾರು 210 ಸ್ಥಳೀಯ ಅಲಂಕಾರಿಕ ಪ್ರಭೇದಗಳನ್ನು ರಫ್ತು ಮಾಡುತ್ತದೆ.", मराठी: "भारत सुमारे 210 देशी शोभिवंत प्रजातींची निर्यात करतो." },
+                orna_market_5: { English: "Growing at 14% annually in India.", اردو: "ہندوستان میں سالانہ 14% کی شرح سے بڑھ رہا ہے۔", हिन्दी: "भारत में 14% वार्षिक वृद्धि।", ಕನ್ನಡ: "ಭಾರತದಲ್ಲಿ ವಾರ್ಷಿಕ 14% ರಷ್ಟು ಬೆಳೆಯುತ್ತಿದೆ.", मराठी: "भारतात वार्षिक 14% वाढ." },
+                popular_orna_species: { English: "Popular Species", اردو: "مشہور اقسام", हिन्दी: "लोकप्रिय प्रजातियाँ", ಕನ್ನಡ: "ಜನಪ್ರಿಯ ಪ್ರಭೇದಗಳು", मराठी: "लोकप्रिय प्रजाती" },
+                food_char_title: { English: "Characteristics & Market Dynamics", اردو: "خصوصیات اور مارکیٹ کی حرکیات", हिन्दी: "विशेषताएँ और बाजार की गतिशीलता", ಕನ್ನಡ: "ಗುಣಲಕ್ಷಣಗಳು ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಡೈನಾಮಿಕ್ಸ್", मराठी: "वैशिष्ट्ये आणि बाजार गतिशीलता" },
+                food_char_subtitle: { English: "Characteristics", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ಗುಣಲಕ್ಷಣಗಳು", मराठी: "वैशिष्ट्ये" },
+                food_purpose_desc: { English: "Human consumption and nutrition.", اردو: "انسانی استعمال اور غذائیت۔", हिन्दी: "मानव उपभोग और पोषण।", ಕನ್ನಡ: "ಮಾನವ ಬಳಕೆ ಮತ್ತು ಪೋಷಣೆ.", मराठी: "मानवी उपभोग आणि पोषण." },
+                food_market_desc: { English: "Food industry, restaurants, retail food markets.", اردو: "فوڈ انڈسٹری، ریستوراں، خوردہ فوڈ مارکیٹس۔", हिन्दी: "खाद्य उद्योग, रेस्तरां, खुदरा खाद्य बाजार।", ಕನ್ನಡ: "ಆಹಾರ ಉದ್ಯಮ, ರೆಸ್ಟೋರೆಂಟ್‌ಗಳು, ಚಿಲ್ಲರೆ ಆಹಾರ ಮಾರುಕಟ್ಟೆಗಳು.", मराठी: "अन्न उद्योग, रेस्टॉरंट्स, किरकोळ अन्न बाजार." },
+                food_value_desc: { English: "Sold in bulk quantities by weight.", اردو: "وزن کے حساب سے بڑی مقدار میں فروخت کیا جاتا ہے۔", हिन्दी: "वजन के हिसाब से थोक मात्रा में बेचा जाता है।", ಕನ್ನಡ: "ತೂಕದ ಪ್ರಕಾರ ಬೃಹತ್ ಪ್ರಮಾಣದಲ್ಲಿ ಮಾರಾಟ ಮಾಡಲಾಗುತ್ತದೆ.", मराठी: "वजनानुसार मोठ्या प्रमाणात विकले जाते." },
+                food_scale_desc: { English: "Requires larger water bodies and higher investment.", اردو: "بڑے آبی ذخائر اور زیادہ سرمایہ کاری کی ضرورت ہوتی ہے۔", हिन्दी: "बड़े जल निकायों और उच्च निवेश की आवश्यकता है।", ಕನ್ನಡ: "ದೊಡ್ಡ ಜಲಮೂಲಗಳು ಮತ್ತು ಹೆಚ್ಚಿನ ಹೂಡಿಕೆಯ ಅಗತ್ಯವಿದೆ.", मराठी: "मोठ्या जल संस्था आणि जास्त गुंतवणुकीची आवश्यकता आहे." },
+                food_species_desc: { English: "Tilapia, catfish, salmon, trout, carp, rohu.", اردو: "تلاپیا، کیٹ فش، سالمن، ٹراؤٹ، کارپ، روہو۔", हिन्दी: "तिलापिया, कैटफ़िश, सामन, ट्राउट, कार्प, रोहू।", ಕನ್ನಡ: "ತಿಲಾಪಿಯಾ, ಕ್ಯಾಟ್ಫಿಶ್, ಸಾಲ್ಮನ್, ಟ್ರೌಟ್, ಕಾರ್ಪ್, ರೋಹು.", मराठी: "तिलापिया, कॅटफिश, सॅल्मन, ट्राउट, कार्प, रोहू." },
+                food_market_1: { English: "Focus on high-protein species for nutrition", اردو: "غذائیت کے لیے اعلی پروٹین والی اقسام پر توجہ دیں۔", हिन्दी: "पोषण के लिए उच्च-प्रोटीन प्रजातियों पर ध्यान दें", ಕನ್ನಡ: "ಪೌಷ್ಟಿಕಾಂಶಕ್ಕಾಗಿ ಹೆಚ್ಚಿನ ಪ್ರೋಟೀನ್ ಪ್ರಭೇದಗಳ ಮೇಲೆ ಕೇಂದ್ರೀಕರಿಸಿ", मराठी: "पोषणासाठी उच्च-प्रथिने असलेल्या प्रजातींवर लक्ष केंद्रित करा" },
+                food_market_2: { English: "Mass production for food security", اردو: "خوراک کی حفاظت کے لیے بڑے پیمانے پر پیداوار", हिन्दी: "खाद्य सुरक्षा के लिए बड़े पैमाने पर उत्पादन", ಕನ್ನಡ: "ಆಹಾರ ಭದ್ರತೆಗಾಗಿ ಸಾಮೂಹಿಕ ಉತ್ಪಾದನೆ", मराठी: "अन्न सुरक्षेसाठी वस्तुमान उत्पादन" },
+                food_market_3: { English: "Integration with agricultural waste management", اردو: "زرعی فضلہ کے انتظام کے ساتھ انضمام", हिन्दी: "कृषि अपशिष्ट प्रबंधन के साथ एकीकरण", ಕನ್ನಡ: "ಕೃಷಿ ತ್ಯಾಜ್ಯ ನಿರ್ವಹಣೆಯೊಂದಿಗೆ ಏಕೀಕರಣ", मराठी: "कृषी कचरा व्यवस्थापनासह एकत्रीकरण" },
+                food_market_4: { English: "Emphasis on growth rate and feed conversion efficiency", اردو: "شرح نمو اور فیڈ کی تبدیلی کی کارکردگی پر زور", हिन्दी: "विकास दर और फ़ीड रूपांतरण दक्षता पर जोर", ಕನ್ನಡ: "ಬೆಳವಣಿಗೆ ದರ ಮತ್ತು ಫೀಡ್ ಪರಿವರ್ತನೆ ದಕ್ಷತೆಯ ಮೇಲೆ ಒತ್ತು", मराठी: "वाढीचा दर आणि खाद्य रूपांतरण कार्यक्षमतेवर भर" },
+                popular_food_species: { English: "Popular Species", اردو: "مشہور اقسام", हिन्दी: "लोकप्रिय प्रजातियाँ", ಕನ್ನಡ: "ಜನಪ್ರಿಯ ಪ್ರಭೇದಗಳು", मराठी: "लोकप्रिय प्रजाती" },
+                special_considerations_title: { English: "Special Considerations for Indian Aquarists", اردو: "ہندوستانی ایکوارسٹ کے لیے خصوصی تحفظات", हिन्दी: "भारतीय एक्वैरिस्ट के लिए विशेष विचार", ಕನ್ನಡ: "ಭಾರತೀಯ ಅಕ್ವೇರಿಸ್ಟ್‌ಗಳಿಗೆ ವಿಶೇಷ ಪರಿಗಣನೆಗಳು", मराठी: "भारतीय मत्स्यपालकांसाठी विशेष विचार" },
+                climate_title: { English: "Climate Adaptations", اردو: "موسمیاتی موافقت", हिन्दी: "जलवायु अनुकूलन", ಕನ್ನಡ: "ಹವಾಮಾನ ರೂಪಾಂತರಗಳು", मराठी: "हवामान अनुकूलन" },
+                climate_desc: { English: "Most ornamentals adapt well. Goldfish and Axolotls require cooling systems. Power backups are essential for temperature-sensitive species.", اردو: "زیادہ تر آرائشی مچھلیاں اچھی طرح سے موافقت کرتی ہیں۔ گولڈ فش اور ایکزولوٹل کو کولنگ سسٹم کی ضرورت ہوتی ہے۔ درجہ حرارت کے حساس پرجاتیوں کے لیے پاور بیک اپ ضروری ہے۔", हिन्दी: "अधिकांश सजावटी अच्छी तरह से अनुकूल होते हैं। गोल्डफिश और एक्सोलोटल्स को शीतलन प्रणाली की आवश्यकता होती है। तापमान-संवेदनशील प्रजातियों के लिए पावर बैकअप आवश्यक है।", ಕನ್ನಡ: "ಹೆಚ್ಚಿನ ಅಲಂಕಾರಿಕಗಳು ಚೆನ್ನಾಗಿ ಹೊಂದಿಕೊಳ್ಳುತ್ತವೆ. ಗೋಲ್ಡ್ ಫಿಷ್ ಮತ್ತು ಆಕ್ಸೊಲೊಟ್ಲ್‌ಗಳಿಗೆ ತಂಪಾಗಿಸುವ ವ್ಯವಸ್ಥೆಗಳು ಬೇಕಾಗುತ್ತವೆ. ತಾಪಮಾನ-ಸೂಕ್ಷ್ಮ ಪ್ರಭೇದಗಳಿಗೆ ವಿದ್ಯುತ್ ಬ್ಯಾಕಪ್ ಅತ್ಯಗತ್ಯ.", मराठी: "बहुतेक शोभिवंत चांगले जुळवून घेतात. गोल्डफिश आणि ॲक्सोलॉटल्सना कूलिंग सिस्टमची आवश्यकता असते. तापमान-संवेदनशील प्रजातींसाठी पॉवर बॅकअप आवश्यक आहे." },
+                legal_title: { English: "Legal & Ethical", اردو: "قانونی اور اخلاقی", हिन्दी: "कानूनी और नैतिक", ಕನ್ನಡ: "ಕಾನೂನು ಮತ್ತು ನೈತಿಕ", मराठी: "कायदेशीर आणि नैतिक" },
+                legal_desc: { English: "Alligator Gar is prohibited. Native carps are for commercial farming. Always check state-specific laws and CITES regulations.", اردو: "ایلیگیٹر گار ممنوع ہے۔ مقامی کارپ تجارتی کاشتکاری کے لیے ہیں۔ ہمیشہ ریاستی مخصوص قوانین اور CITES کے ضوابط کو چیک کریں۔", हिन्दी: "एलिगेटर गार निषिद्ध है। देशी कार्प व्यावसायिक खेती के लिए हैं। हमेशा राज्य-विशिष्ट कानूनों और CITES विनियमों की जाँच करें।", ಕನ್ನಡ: "ಅಲಿಗೇಟರ್ ಗಾರ್ ಅನ್ನು ನಿಷೇಧಿಸಲಾಗಿದೆ. ಸ್ಥಳೀಯ ಕಾರ್ಪ್‌ಗಳು ವಾಣಿಜ್ಯ ಕೃಷಿಗಾಗಿವೆ. ಯಾವಾಗಲೂ ರಾಜ್ಯ-ನಿರ್ದಿಷ್ಟ ಕಾನೂನುಗಳು ಮತ್ತು CITES ನಿಯಮಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.", मराठी: "ॲलिगेटर गार प्रतिबंधित आहे. देशी कार्प व्यावसायिक शेतीसाठी आहेत. नेहमी राज्य-विशिष्ट कायदे आणि CITES नियम तपासा." },
+                economic_title: { English: "Economic Factors", اردو: "معاشی عوامل", हिन्दी: "आर्थिक कारक", ಕನ್ನಡ: "ಆರ್ಥಿಕ ಅಂಶಗಳು", मराठी: "आर्थिक घटक" },
+                economic_desc: { English: "Factor in setup and operating costs, especially for chillers. Many ornamental species are now bred locally, improving availability.", اردو: "سیٹ اپ اور آپریٹنگ اخراجات میں عنصر، خاص طور پر چلرز کے لیے۔ بہت سی آرائشی اقسام اب مقامی طور پر پالی جاتی ہیں، جس سے دستیابی بہتر ہوتی ہے۔", हिन्दी: "सेटअप और परिचालन लागत में कारक, विशेष रूप से चिलर्स के लिए। कई सजावटी प्रजातियां अब स्थानीय रूप से पैदा की जाती हैं, जिससे उपलब्धता में सुधार होता है।", ಕನ್ನಡ: "ಸೆಟಪ್ ಮತ್ತು ಆಪರೇಟಿಂಗ್ ವೆಚ್ಚಗಳಲ್ಲಿ ಅಂಶ, ವಿಶೇಷವಾಗಿ ಚಿಲ್ಲರ್‌ಗಳಿಗೆ. ಅನೇಕ ಅಲಂಕಾರಿಕ ಪ್ರಭೇದಗಳನ್ನು ಈಗ ಸ್ಥಳೀಯವಾಗಿ ಬೆಳೆಸಲಾಗುತ್ತದೆ, ಇದು ಲಭ್ಯತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.", मराठी: "सेटअप आणि ऑपरेटिंग खर्चात घटक, विशेषतः चिलर्ससाठी. अनेक शोभिवंत प्रजाती आता स्थानिक पातळीवर पैदास केल्या जातात, ज्यामुळे उपलब्धता सुधारते." },
+                guppy_name: { English: "GUPPY (Poecilia reticulata)", اردو: "گپی (Poecilia reticulata)", हिन्दी: "गप्पी (पोएसिलिया रेटिकुलाटा)"},
+                molly_name: { English: "MOLLY (Poecilia species)", اردو: "مولی (Poecilia species)", हिन्दी: "मॉली (पोएसिलिया प्रजाति)"},
+                goldfish_name: { English: "GOLDFISH (Carassius auratus)", اردو: "گولڈ فش (Carassius auratus)", हिन्दी: "सुनहरीमछली (कैरेसियस ऑराटस)"},
+                arowana_name: { English: "AROWANA (Scleropages species)", اردو: "اروانا (Scleropages species)", हिन्दी: "अरोवाना (स्क्लेरोपेजेस प्रजाति)"},
+                axolotl_name: { English: "AXOLOTL (Ambystoma mexicanum)", اردو: "ایکسولوٹل (Ambystoma mexicanum)", हिन्दी: "एक्सोलोटल (एम्बिस्टोमा मैक्सिकनम)"},
+                tilapia_name: { English: "TILAPIA (Oreochromis niloticus)", اردو: "تلاپیا (Oreochromis niloticus)", हिन्दी: "तिलापिया (ओरियोक्रोमिस निलोटिकस)"},
+                pangasius_name: { English: "PANGASIUS (Pangasianodon hypophthalmus)", اردو: "پنگاسیس (Pangasianodon hypophthalmus)", हिन्दी: "पंगासियस (पंगासियनोडोन हाइपोफ्थैल्मस)"},
+                mrigal_name: { English: "MRIGAL (Cirrhinus mrigala)", اردو: "مریگل (Cirrhinus mrigala)", हिन्दी: "म्रिगल (सिरहिनस म्रिगाला)"},
+                native_status: { English: "Native Status:", اردو: "مقامی حیثیت:", हिन्दी: "मूल स्थिति:", ಕನ್ನಡ: "ಸ್ಥಳೀಯ ಸ್ಥಿತಿ:", मराठी: "मूळ स्थिती:" },
+                category: { English: "Category:", اردو: "زمرہ:", हिन्दी: "श्रेणी:", ಕನ್ನಡ: "ವರ್ಗ:", मराठी: "श्रेणी:" },
+                size: { English: "Size:", اردو: "سائز:", हिन्दी: "आकार:", ಕನ್ನಡ: "ಗಾತ್ರ:", मराठी: "आकार:" },
+                ph_range: { English: "pH Range:", اردو: "پی ایچ رینج:", हिन्दी: "पीएच रेंज:", ಕನ್ನಡ: "ಪಿಹೆಚ್ ಶ್ರೇಣಿ:", मराठी: "pH श्रेणी:" },
+                temperature: { English: "Temperature:", اردو: "درجہ حرارت:", हिन्दी: "तापमान:", ಕನ್ನಡ: "ತಾಪಮಾನ:", मराठी: "तापमान:" },
+                diet: { English: "Diet:", اردو: "خوراک:", हिन्दी: "आहार:", ಕನ್ನಡ: "ಆಹಾರ:", मराठी: "आहार:" },
+                breeding: { English: "Breeding:", اردو: "افزائش نسل:", हिन्दी: "प्रजनन:", ಕನ್ನಡ: "ಸಂತಾನೋತ್ಪತ್ತಿ:", मराठी: "प्रजनन:" },
+                exotic: { English: "EXOTIC", اردو: "غیر ملکی", हिन्दी: "विदेशी", ಕನ್ನಡ: "ವಿದೇಶಿ", मराठी: "विदेशी" },
+                ornamental: { English: "Ornamental", اردو: "آرائشی", हिन्दी: "सजावटी", ಕನ್ನಡ: "ಅಲಂಕಾರಿಕ", मराठी: "शोभिवंत" },
+                omnivorous: { English: "Omnivorous", اردو: "سب کچھ کھانے والی", हिन्दी: "सर्वाहारी", ಕನ್ನಡ: "ಸರ್ವಭಕ್ಷಕ", मराठी: "सर्वभक्षक" },
+                livebearer: { English: "Livebearer", اردو: "زندہ بچے دینے والی", हिन्दी: "जीवित बच्चा देने वाला", ಕನ್ನಡ: "ಲೈವ್‌బేరರ್", मराठी: "लिव्हबेअरर" },
+                omni_herbi: { English: "Omnivorous (Herbivorous tendency)", اردو: "سب کچھ کھانے والی (سبزی خور رجحان)", हिन्दी: "सर्वाहारी (शाकाहारी प्रवृत्ति)", ಕನ್ನಡ: "ಸರ್ವಭಕ್ಷಕ (ಸಸ್ಯಾಹಾರಿ ಪ್ರವೃತ್ತಿ)", मराठी: "सर्वभक्षक (वनस्पतीजन्य प्रवृत्ती)" },
+                orna_cold: { English: "Ornamental (Cold-water)", اردو: "آرائشی (ٹھنڈے پانی کی)", हिन्दी: "सजावटी (ठंडे पानी की)", ಕನ್ನಡ: "ಅಲಂಕಾರಿಕ (ಶೀತ-ನೀರಿನ)", मराठी: "शोभिवंत (थंड-पाण्याचे)" },
+                goldfish_note: { English: "Requires powerful filtration!", اردو: "طاقتور فلٹریشن کی ضرورت ہے!", हिन्दी: "शक्तिशाली निस्पंदन की आवश्यकता है!", ಕನ್ನಡ: "ಶಕ್ತಿಯುತ ಶೋಧನೆ ಅಗತ್ಯವಿದೆ!", मराठी: "शक्तिशाली गाळण्याची प्रक्रिया आवश्यक आहे!" },
+                large_predator: { English: "Large Predator", اردو: "بڑا شکاری", हिन्दी: "बड़ा शिकारी", ಕನ್ನಡ: "ದೊಡ್ಡ ಪರಭಕ್ಷಕ", मराठी: "मोठा शिकारी" },
+                carnivorous: { English: "Carnivorous", اردو: "گوشت خور", हिन्दी: "मांसाहारी", ಕನ್ನಡ: "ಮಾಂಸಾಹಾರಿ", मराठी: "मांसाहारी" },
+                arowana_note: { English: "Excellent jumper, secure lid needed!", اردو: "بہترین جمپر، محفوظ ڈھکن کی ضرورت ہے!", हिन्दी: "उत्कृष्ट जम्पर, सुरक्षित ढक्कन की आवश्यकता है!", ಕನ್ನಡ: "ಅತ್ಯುತ್ತಮ ಜಿಗಿತಗಾರ, ಸುರಕ್ಷಿತ ಮುಚ್ಚಳ ಬೇಕು!", मराठी: "उत्कृष्ट जम्पर, सुरक्षित झाकण आवश्यक आहे!" },
+                amphibian: { English: "Aquatic Amphibian", اردو: "آبی جل تھلیا", हिन्दी: "जलीय उभयचर", ಕನ್ನಡ: "ಜಲಚರ ಉಭಯಚರ", मराठी: "जलचर उभयचर" },
+                axolotl_note: { English: "Chiller essential in India!", اردو: "ہندوستان میں چلر ضروری ہے!", हिन्दी: "भारत में चिलर आवश्यक है!", ಕನ್ನಡ: "ಭಾರತದಲ್ಲಿ ಚಿಲ್ಲರ್ ಅತ್ಯಗತ್ಯ!", मराठी: "भारतात चिलर आवश्यक आहे!" },
+                food_fish: { English: "Food Fish", اردو: "کھانے کی مچھلی", हिन्दी: "खाद्य मछली", ಕನ್ನಡ: "ಆಹಾರ ಮೀನು", मराठी: "खाद्य मासे" },
+                major_states: { English: "Major States:", اردو: "بڑے صوبے:", हिन्दी: "प्रमुख राज्य:", ಕನ್ನಡ: "ಪ್ರಮುಖ ರಾಜ್ಯಗಳು:", मराठी: "प्रमुख राज्ये:" },
+                tilapia_states: { English: "AP, WB, MH, TN", اردو: "اے پی، ڈبلیو بی، ایم ایچ، ٹی این", हिन्दी: "एपी, डब्ल्यूबी, एमएच, टीएन", ಕನ್ನಡ: "ಎಪಿ, ಡಬ್ಲ್ಯೂಬಿ, ಎಂಹೆಚ್, ಟಿಎನ್", मराठी: "एपी, डब्ल्यूबी, एमएच, टीएन" },
+                total_prod: { English: "Total Production:", اردو: "کل پیداوار:", हिन्दी: "कुल उत्पादन:", ಕನ್ನಡ: "ಒಟ್ಟು ಉತ್ಪಾದನೆ:", मराठी: "एकूण उत्पादन:" },
+                seed_source: { English: "Seed Source:", اردو: "بیج کا ذریعہ:", हिन्दी: "बीज स्रोत:", ಕನ್ನಡ: "ಬೀಜದ ಮೂಲ:", मराठी: "बियाणे स्रोत:" },
+                largest_prod: { English: "Largest Producer:", اردو: "سب سے بڑا پروڈیوسر:", हिन्दी: "सबसे बड़ा उत्पादक:", ಕನ್ನಡ: "ಅತಿದೊಡ್ಡ ಉತ್ಪಾದಕ:", मराठी: "सर्वात मोठा उत्पादक:" },
+                andhra_pradesh: { English: "Andhra Pradesh", اردو: "آندھرا پردیش", हिन्दी: "आंध्र प्रदेश", ಕನ್ನಡ: "ಆಂಧ್ರ ಪ್ರದೇಶ", मराठी: "आंध्र प्रदेश" },
+                total_prod_2018: { English: "2018 Production:", اردو: "2018 پیداوار:", हिन्दी: "2018 उत्पादन:", ಕನ್ನಡ: "2018 ಉತ್ಪಾದನೆ:", मराठी: "2018 उत्पादन:" },
+                native: { English: "NATIVE", اردو: "مقامی", हिन्दी: "देशी", ಕನ್ನಡ: "ಸ್ಥಳೀಯ", मराठी: "देशी" },
+                natural_range: { English: "Natural Range:", اردو: "قدرتی رینج:", हिन्दी: "प्राकृतिक रेंज:", ಕನ್ನಡ: "ನೈಸರ್ಗಿಕ ಶ್ರೇಣಿ:", मराठी: "नैसर्गिक श्रेणी:" },
+                mrigal_range: { English: "Ganga, Brahmaputra rivers", اردو: "گنگا، برہم پترا دریا", हिन्दी: "गंगा, ब्रह्मपुत्र नदियाँ", ಕನ್ನಡ: "ಗಂಗಾ, ಬ್ರಹ್ಮಪುತ್ರ ನದಿಗಳು", मराठी: "गंगा, ब्रह्मपुत्रा नद्या" },
+                farming_method: { English: "Farming Method:", اردو: "کاشتکاری کا طریقہ:", हिन्दी: "खेती की विधि:", ಕನ್ನಡ: "ಕೃಷಿ ವಿಧಾನ:", मराठी: "शेती पद्धत:" },
+                polyculture: { English: "Polyculture", اردو: "مخلوط کاشت", हिन्दी: "बहुसंस्कृति", ಕನ್ನಡ: "ಬಹುಕೃಷಿ", मराठी: "बहुसंस्कृती" },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                localStorage.setItem('farmEaseLang', lang);
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+            
+            // --- TAB FUNCTIONALITY ---
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Deactivate all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Activate the clicked button and corresponding content
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+

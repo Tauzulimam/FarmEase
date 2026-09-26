@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Ease - Market Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        /* 1. Custom Font Family */
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* 2. Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #166534; /* Forest Green */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14532d;
+        }
+        
+        /* 3. Header Styling - Always visible */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 4. Language Dropdown */
+        .dropdown .dropdown-menu {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .dropdown .dropdown-menu.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 5. Flip Card for High-Value Crops */
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                     <!-- Back Button -->
+                    <button onclick="history.back()" class="text-green-800 hover:bg-green-100 p-2 rounded-full transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="bg-green-800 p-2 rounded-full shadow-md">
+                             <i class="fas fa-leaf text-2xl text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-900" data-translate="logo_name">Farm Ease</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-10 text-gray-600">
+                    <a href="index.html" class="hover:text-green-700 transition" data-translate="nav_home">Home</a>
+                    <a href="index.html#features" class="hover:text-green-700 transition" data-translate="nav_features">Features</a>
+                    <a href="index.html#updates" class="hover:text-green-700 transition" data-translate="nav_updates">Updates</a>
+                    <a href="index.html#about" class="hover:text-green-700 transition" data-translate="nav_about">About</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 transition">
+                            <i class="fas fa-globe text-green-800"></i>
+                            <span data-translate="language_button">Language</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="English">English</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="اردو">اردو</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="हिन्दी">हिन्दी</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="ಕನ್ನಡ">ಕನ್ನಡ</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50" data-lang="मराठी">मराठी</a>
+                        </div>
+                    </div>
+                    <button class="md:hidden" id="mobile-menu-button">
+                        <i class="fas fa-bars text-2xl text-green-900"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t" id="mobile-menu-items">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_home_mob">Home</a>
+                <a href="index.html#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_features_mob">Features</a>
+                <a href="index.html#updates" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_updates_mob">Updates</a>
+                <a href="index.html#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100" data-translate="nav_about_mob">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- Page Title Section -->
+        <section class="bg-white py-8 shadow-sm">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-green-900" data-translate="mi_title">Agricultural Market Insights</h1>
+                <p class="mt-2 text-slate-600 max-w-2xl mx-auto" data-translate="mi_subtitle">Deep Analysis for 2024 and Predictions for 2025</p>
+            </div>
+        </section>
+        
+        <!-- Dashboard Content -->
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Market Overview -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                        <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="overview_title">Market Overview & Key Trends</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            <div class="bg-green-50 p-4 rounded-lg"><p class="text-3xl font-bold text-green-800">3.5%</p><p class="text-sm font-semibold" data-translate="overview_growth">Growth Rate (Q2 FY25)</p></div>
+                            <div class="bg-amber-50 p-4 rounded-lg"><p class="text-3xl font-bold text-amber-800">30.23%</p><p class="text-sm font-semibold" data-translate="overview_gva">GVA Contribution (FY23)</p></div>
+                            <div class="bg-lime-50 p-4 rounded-lg"><p class="text-3xl font-bold text-lime-800">5.23%</p><p class="text-sm font-semibold" data-translate="overview_income">Annual Income Increase</p></div>
+                        </div>
+                    </div>
+                    <!-- High-Value Crop Analysis -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                         <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="hvc_title">High-Value Crop Analysis 2024</h2>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-green-700 text-white p-4 flex flex-col justify-center items-center text-center"><i class="fas fa-leaf text-4xl mb-2"></i><h3 class="text-xl font-bold" data-translate="vanilla_title">Vanilla</h3></div><div class="flip-card-back bg-green-800 text-white p-4 flex flex-col justify-center text-center"><h4 class="font-bold">₹40,000/kg</h4><p data-translate="profit_margin">Profit Margin: 300%</p><p data-translate="net_profit">Net Profit: ₹8 lakh/acre</p></div></div></div>
+                             <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-amber-600 text-white p-4 flex flex-col justify-center items-center text-center"><i class="fas fa-spa text-4xl mb-2"></i><h3 class="text-xl font-bold" data-translate="saffron_title">Saffron</h3></div><div class="flip-card-back bg-amber-700 text-white p-4 flex flex-col justify-center text-center"><h4 class="font-bold">₹3 lakh/kg</h4><p data-translate="profit_margin">Profit Margin: 200%</p><p data-translate="net_profit">Net Profit: ₹6 lakh/acre</p></div></div></div>
+                             <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-lime-600 text-white p-4 flex flex-col justify-center items-center text-center"><i class="fas fa-seedling text-4xl mb-2"></i><h3 class="text-xl font-bold" data-translate="avocado_title">Avocado</h3></div><div class="flip-card-back bg-lime-700 text-white p-4 flex flex-col justify-center text-center"><h4 class="font-bold">₹350-600/kg</h4><p data-translate="profit_margin">Profit Margin: 180%</p><p data-translate="net_profit">Net Profit: ₹3 lakh/acre</p></div></div></div>
+                             <div class="flip-card h-48"><div class="flip-card-inner"><div class="flip-card-front bg-pink-600 text-white p-4 flex flex-col justify-center items-center text-center"><i class="fas fa-dragon text-4xl mb-2"></i><h3 class="text-xl font-bold" data-translate="dragon_fruit_title">Dragon Fruit</h3></div><div class="flip-card-back bg-pink-700 text-white p-4 flex flex-col justify-center text-center"><h4 class="font-bold">₹800/kg</h4><p data-translate="profit_margin">Profit Margin: 150%</p><p data-translate="net_profit">Net Profit: ₹2.5 lakh/acre</p></div></div></div>
+                         </div>
+                    </div>
+                     <!-- Exports Performance -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                        <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="exports_title">Agricultural Exports Performance FY24</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-semibold mb-2 text-green-700" data-translate="strong_performers">Strong Performers</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div class="bg-green-100 p-3 rounded-lg text-center"><p class="font-bold text-green-900">$8.09B</p><p class="text-sm" data-translate="marine">Marine Products</p></div>
+                                    <div class="bg-green-100 p-3 rounded-lg text-center"><p class="font-bold text-green-900">$1.24B</p><p class="text-sm" data-translate="coffee">Coffee</p></div>
+                                    <div class="bg-green-100 p-3 rounded-lg text-center"><p class="font-bold text-green-900">$4.25B</p><p class="text-sm" data-translate="spices">Spices</p></div>
+                                    <div class="bg-green-100 p-3 rounded-lg text-center"><p class="font-bold text-green-900">$5.2B</p><p class="text-sm" data-translate="basmati">Basmati Rice</p></div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-2 text-red-700" data-translate="challenged_sectors">Challenged Sectors</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                     <div class="bg-red-100 p-3 rounded-lg text-center"><p class="font-bold text-red-900">$2.1B</p><p class="text-sm" data-translate="sugar">Sugar</p></div>
+                                     <div class="bg-red-100 p-3 rounded-lg text-center"><p class="font-bold text-red-900">$575M</p><p class="text-sm" data-translate="cotton">Cotton</p></div>
+                                     <div class="bg-red-100 p-3 rounded-lg text-center"><p class="font-bold text-red-900">$8.5B</p><p class="text-sm" data-translate="non_basmati">Non-Basmati Rice</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-6">
+                    <!-- 2025 Market Predictions -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                        <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="predictions_title">2025 Market Predictions (Growth)</h2>
+                        <div class="w-full h-80 flex justify-center items-center">
+                            <canvas id="predictionsChart"></canvas>
+                        </div>
+                    </div>
+                     <!-- Livestock & Dairy -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                        <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="livestock_title">Livestock & Dairy Insights</h2>
+                        <div class="text-center mb-4"><p class="text-3xl font-bold text-green-800">239.3 M tonnes</p><p class="text-sm font-semibold" data-translate="milk_prod">Milk Production 2024</p></div>
+                        <h3 class="font-semibold text-center mb-2" data-translate="high_growth_segments">High-Growth Segments</h3>
+                        <div class="flex justify-around text-center text-sm">
+                            <div><i class="fas fa- शहद fa-2x text-amber-500"></i><p data-translate="honey">Honey</p><p class="font-bold">12.3%</p></div>
+                            <div><i class="fas fa-drumstick-bite fa-2x text-amber-500"></i><p data-translate="goat_meat">Goat Meat</p><p class="font-bold">8.2%</p></div>
+                            <div><i class="fas fa-fish fa-2x text-amber-500"></i><p data-translate="fish">Fish</p><p class="font-bold">7.8%</p></div>
+                        </div>
+                    </div>
+                    <!-- MSP & ROI -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                        <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="investment_title">Investment & Profitability</h2>
+                        <h3 class="font-semibold mb-2" data-translate="msp_hikes">MSP Increases 2025-26</h3>
+                        <ul class="text-sm space-y-1">
+                            <li><strong data-translate="mustard">Rapeseed & Mustard:</strong> 98% profit margin</li>
+                            <li><strong data-translate="lentil">Lentil (Masur):</strong> 89% profit margin</li>
+                            <li><strong data-translate="wheat">Wheat:</strong> 105% profit margin</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Summary Section -->
+            <div class="mt-6 bg-white p-6 rounded-xl shadow-lg border">
+                <h2 class="text-2xl font-bold text-green-900 mb-4" data-translate="summary_title">Summary & Strategic Takeaway</h2>
+                <p class="text-gray-700 mb-4" data-translate="summary_conclusion">India's agricultural sector in 2024 showed strong fundamentals with diversification into high-value crops driving farmer income growth. The shift toward premium crops, technology adoption, and export orientation positions the sector for sustained growth in 2025 and beyond.</p>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                    <h3 class="font-bold text-amber-800" data-translate="summary_takeaway_title">Key Takeaway</h3>
+                    <p class="text-amber-700" data-translate="summary_takeaway_text">Farmers focusing on high-value crops with technology integration and market linkages can achieve 3-5x higher incomes compared to traditional cereal farming, making 2025 an opportune year for agricultural transformation.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_about_title">Farm Ease</h3>
+                    <p class="mt-2 text-green-200" data-translate="footer_about_desc">Simplifying farming and amplifying growth for a prosperous agricultural future.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_links_title">Quick Links</h3>
+                    <ul class="mt-2 space-y-1 text-green-200">
+                        <li><a href="index.html#features" class="hover:text-amber-400" data-translate="footer_link_features">Features</a></li>
+                        <li><a href="index.html#updates" class="hover:text-amber-400" data-translate="footer_link_updates">Updates</a></li>
+                        <li><a href="index.html#about" class="hover:text-amber-400" data-translate="footer_link_about">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold" data-translate="footer_social_title">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2">
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-green-200 hover:text-amber-400"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-green-700 pt-8 text-center text-green-300">
+                <p data-translate="footer_copyright">&copy; 2025 Farm Ease. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Language Selection Notification -->
+    <div id="language-notification" class="fixed bottom-5 right-5 bg-green-800 text-white py-3 px-5 rounded-lg shadow-xl opacity-0 transition-opacity duration-500">
+        Language set to <span id="lang-name" class="font-bold"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TRANSLATION DATA ---
+            const translations = {
+                // Shared
+                logo_name: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                nav_home: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                nav_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                language_button: { English: "Language", اردو: "زبان", हिन्दी: "भाषा", ಕನ್ನಡ: "ಭಾಷೆ", मराठी: "भाषा" },
+                nav_home_mob: { English: "Home", اردو: "گھر", हिन्दी: "होम", ಕನ್ನಡ: "ಮುಖಪುಟ", मराठी: "मुख्यपृष्ठ" },
+                nav_features_mob: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                nav_updates_mob: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतने" },
+                nav_about_mob: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_about_title: { English: "Farm Ease", اردو: "فارم ایز", हिन्दी: "फार्म ईज़", ಕನ್ನಡ: "ಫಾರ್ಮ್ ಈಸ್", मराठी: "फार्म ईझ" },
+                footer_about_desc: { English: "Simplifying farming and amplifying growth for a prosperous agricultural future.", اردو: "ایک خوشحال زرعی مستقبل کے لیے کاشتکاری کو آسان بنانا اور ترقی کو بڑھانا۔", हिन्दी: "समृद्ध कृषि भविष्य के लिए खेती को सरल बनाना और विकास को बढ़ाना।", ಕನ್ನಡ: "ಸಮೃದ್ಧ ಕೃಷಿ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಕೃಷಿಯನ್ನು ಸರಳಗೊಳಿಸುವುದು ಮತ್ತು ಬೆಳವಣಿಗೆಯನ್ನು ವಿಸ್ತರಿಸುವುದು.", मराठी: "समृद्ध कृषी भविष्यासाठी शेती सुलभ करणे आणि वाढीला चालना देणे." },
+                footer_links_title: { English: "Quick Links", اردو: "فوری لنکس", हिन्दी: "त्वरित लिंक्स", ಕನ್ನಡ: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು", मराठी: "द्रुत दुवे" },
+                footer_link_features: { English: "Features", اردو: "خصوصیات", हिन्दी: "विशेषताएँ", ಕನ್ನಡ: "ವೈಶಿಷ್ಟ್ಯಗಳು", मराठी: "वैशिष्ट्ये" },
+                footer_link_updates: { English: "Updates", اردو: "اپڈیٹس", हिन्दी: "अपडेट्स", ಕನ್ನಡ: "ನವೀಕರಣಗಳು", मराठी: "अद्यतне" },
+                footer_link_about: { English: "About", اردو: "ہمارے بارے میں", हिन्दी: "हमारे बारे में", ಕನ್ನಡ: "ನಮ್ಮ ಬಗ್ಗೆ", मराठी: "आमच्याबद्दल" },
+                footer_social_title: { English: "Connect With Us", اردو: "ہم سے رابطہ کریں", हिन्दी: "हमसे जुड़ें", ಕನ್ನಡ: "ನಮ್ಮೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ", मराठी: "आमच्याशी कनेक्ट व्हा" },
+                footer_copyright: { English: "© 2025 Farm Ease. All Rights Reserved.", اردو: "© 2025 فارم ایز۔ جملہ حقوق محفوظ ہیں۔", हिन्दी: "© 2025 फार्म ईज़। सर्वाधिकार सुरक्षित।", ಕನ್ನಡ: "© 2025 ಫಾರ್ಮ್ ಈಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.", मराठी: "© 2025 फार्म ईझ. सर्व हक्क राखीव." },
+                
+                // Market Insights Page Specific
+                mi_title: { English: "Agricultural Market Insights", اردو: "زرعی مارکیٹ کی بصیرتیں۔", हिन्दी: "कृषि बाजार अंतर्दृष्टि", ಕನ್ನಡ: "ಕೃಷಿ ಮಾರುಕಟ್ಟೆ ಒಳನೋಟಗಳು", मराठी: "कृषी बाजारपेठेतील अंतर्दृष्टी" },
+                mi_subtitle: { English: "Deep Analysis for 2024 and Predictions for 2025", اردو: "2024 کا گہرا تجزیہ اور 2025 کے لیے پیشین گوئیاں", हिन्दी: "2024 के लिए गहन विश्लेषण और 2025 के लिए भविष्यवाणियां", ಕನ್ನಡ: "2024 ರ ಆಳವಾದ ವಿಶ್ಲೇಷಣೆ ಮತ್ತು 2025 ರ ಮುನ್ನೋಟಗಳು", मराठी: "2024 साठी सखोल विश्लेषण आणि 2025 साठीचे अंदाज" },
+                overview_title: { English: "Market Overview & Key Trends", اردو: "مارکیٹ کا جائزہ اور اہم رجحانات", हिन्दी: "बाजार अवलोकन और मुख्य रुझान", ಕನ್ನಡ: "ಮಾರುಕಟ್ಟೆ ಅವಲೋಕನ ಮತ್ತು ಪ್ರಮುಖ ಪ್ರವೃತ್ತಿಗಳು", मराठी: "बाजारपेठेचा आढावा आणि मुख्य ट्रेंड" },
+                overview_growth: { English: "Growth Rate (Q2 FY25)", اردو: "شرح نمو (Q2 مالی سال 25)", हिन्दी: "विकास दर (Q2 FY25)", ಕನ್ನಡ: "ಬೆಳವಣಿಗೆ ದರ (Q2 FY25)", मराठी: "वाढीचा दर (Q2 FY25)" },
+                overview_gva: { English: "GVA Contribution (FY23)", اردو: "GVA شراکت (مالی سال 23)", हिन्दी: "जीवीए योगदान (FY23)", ಕನ್ನಡ: "ಜಿವಿಎ ಕೊಡುಗೆ (FY23)", मराठी: "GVA योगदान (FY23)" },
+                overview_income: { English: "Annual Income Increase", اردو: "سالانہ آمدنی میں اضافہ", हिन्दी: "वार्षिक आय वृद्धि", ಕನ್ನಡ: "ವಾರ್ಷಿಕ ಆದಾಯ ಹೆಚ್ಚಳ", मराठी: "वार्षिक उत्पन्न वाढ" },
+                hvc_title: { English: "High-Value Crop Analysis 2024", اردو: "اعلیٰ قیمت والی فصلوں کا تجزیہ 2024", हिन्दी: "उच्च-मूल्य फसल विश्लेषण 2024", ಕನ್ನಡ: "ಹೆಚ್ಚಿನ ಮೌಲ್ಯದ ಬೆಳೆ ವಿಶ್ಲೇಷಣೆ 2024", मराठी: "उच्च-मूल्य पीक विश्लेषण 2024" },
+                vanilla_title: { English: "Vanilla", اردو: "ونیلا", हिन्दी: "वेनिला", ಕನ್ನಡ: "ವೆನಿಲ್ಲಾ", मराठी: "व्हॅनिला" },
+                profit_margin: { English: "Profit Margin:", اردو: "منافع کا مارجن:", हिन्दी: "लाभ मार्जिन:", ಕನ್ನಡ: "ಲಾಭಾಂಶ:", मराठी: "नफा मार्जिन:" },
+                net_profit: { English: "Net Profit:", اردو: "خالص منافع:", हिन्दी: "शुद्ध लाभ:", ಕನ್ನಡ: "ನಿವ್ವಳ ಲಾಭ:", मराठी: "निव्वळ नफा:" },
+                saffron_title: { English: "Saffron", اردو: "زعفران", हिन्दी: "केसर", ಕನ್ನಡ: "ಕೇಸರಿ", मराठी: "केशर" },
+                avocado_title: { English: "Avocado", اردو: "ایواکاڈو", हिन्दी: "एवोकैडो", ಕನ್ನಡ: "ಆವಕಾಡೊ", मराठी: "ॲव्होकॅडो" },
+                dragon_fruit_title: { English: "Dragon Fruit", اردو: "ڈریگن فروٹ", हिन्दी: "ड्रैगन फ्रूट", ಕನ್ನಡ: "ಡ್ರ್ಯಾಗನ್ ಫ್ರೂಟ್", मराठी: "ड्रॅगन फ्रूट" },
+                exports_title: { English: "Agricultural Exports Performance FY24", اردو: "زرعی برآمدات کی کارکردگی مالی سال 24", हिन्दी: "कृषि निर्यात प्रदर्शन FY24", ಕನ್ನಡ: "ಕೃಷಿ ರಫ್ತು ಪ್ರದರ್ಶನ FY24", मराठी: "कृषी निर्यात कामगिरी FY24" },
+                strong_performers: { English: "Strong Performers", اردو: "مضبوط کارکردگی والے", हिन्दी: "मजबूत प्रदर्शक", ಕನ್ನಡ: "ಬಲವಾದ ಪ್ರದರ್ಶಕರು", मराठी: "उत्तम कामगिरी करणारे" },
+                marine: { English: "Marine Products", اردو: "سمندری مصنوعات", हिन्दी: "समुद्री उत्पाद", ಕನ್ನಡ: "ಸಮುದ್ರಾಹಾರ ಉತ್ಪನ್ನಗಳು", मराठी: "सागरी उत्पादने" },
+                coffee: { English: "Coffee", اردو: "کافی", हिन्दी: "कॉफी", ಕನ್ನಡ: "ಕಾಫಿ", मराठी: "कॉफी" },
+                spices: { English: "Spices", اردو: "مصالحے", हिन्दी: "मसाले", ಕನ್ನಡ: "ಮಸಾಲೆಗಳು", मराठी: "मसाले" },
+                basmati: { English: "Basmati Rice", اردو: "باسمتی چاول", हिन्दी: "बासमती चावल", ಕನ್ನಡ: "ಬಾಸ್ಮತಿ ಅಕ್ಕಿ", मराठी: "बासमती तांदूळ" },
+                challenged_sectors: { English: "Challenged Sectors", اردو: "چیلنج والے شعبے", हिन्दी: "चुनौतीपूर्ण क्षेत्र", ಕನ್ನಡ: "ಸವಾಲಿನ ವಲಯಗಳು", मराठी: "आव्हानात्मक क्षेत्रे" },
+                sugar: { English: "Sugar", اردو: "چینی", हिन्दी: "चीनी", ಕನ್ನಡ: "ಸಕ್ಕರೆ", मराठी: "साखर" },
+                cotton: { English: "Cotton", اردو: "کپاس", हिन्दी: "कपास", ಕನ್ನಡ: "ಹತ್ತಿ", मराठी: "कापूस" },
+                non_basmati: { English: "Non-Basmati Rice", اردو: "غیر باسمتی چاول", हिन्दी: "गैर-बासमती चावल", ಕನ್ನಡ: "ಬಾಸ್ಮತಿಯೇತರ ಅಕ್ಕಿ", मराठी: "नॉन-बासमती तांदूळ" },
+                predictions_title: { English: "2025 Market Predictions (Growth)", اردو: "2025 مارکیٹ کی پیشن گوئیاں (نمو)", हिन्दी: "2025 बाजार भविष्यवाणियां (वृद्धि)", ಕನ್ನಡ: "2025 ಮಾರುಕಟ್ಟೆ ಮುನ್ನೋಟಗಳು (ಬೆಳವಣಿಗೆ)", मराठी: "2025 बाजारपेठेचे अंदाज (वाढ)" },
+                livestock_title: { English: "Livestock & Dairy Insights", اردو: "مویشی اور ڈیری کی بصیرتیں۔", हिन्दी: "पशुधन और डेयरी अंतर्दृष्टि", ಕನ್ನಡ: "ಜಾನುವಾರು ಮತ್ತು ಹೈನುಗಾರಿಕೆ ಒಳನೋಟಗಳು", मराठी: "पशुधन आणि दुग्धव्यवसाय अंतर्दृष्टी" },
+                milk_prod: { English: "Milk Production 2024", اردو: "دودھ کی پیداوار 2024", हिन्दी: "दुग्ध उत्पादन 2024", ಕನ್ನಡ: "ಹಾಲು ಉತ್ಪಾದನೆ 2024", मराठी: "दूध उत्पादन 2024" },
+                high_growth_segments: { English: "High-Growth Segments", اردو: "اعلیٰ نمو والے حصے", हिन्दी: "उच्च-विकास खंड", ಕನ್ನಡ: "ಹೆಚ್ಚಿನ-ಬೆಳವಣಿಗೆಯ ವಿಭಾಗಗಳು", मराठी: "उच्च-वाढीचे विभाग" },
+                honey: { English: "Honey", اردو: "شہد", हिन्दी: "शहद", ಕನ್ನಡ: "ಜೇನುತುಪ್ಪ", मराठी: "मध" },
+                goat_meat: { English: "Goat Meat", اردو: "بکرے کا گوشت", हिन्दी: "बकरे का मांस", ಕನ್ನಡ: "ಮೇಕೆ ಮಾಂಸ", मराठी: "शेळीचे मांस" },
+                fish: { English: "Fish", اردو: "مچھلی", हिन्दी: "मछली", ಕನ್ನಡ: "ಮೀನು", मराठी: "मासे" },
+                investment_title: { English: "Investment & Profitability", اردو: "سرمایہ کاری اور منافع", हिन्दी: "निवेश और लाभप्रदता", ಕನ್ನಡ: "ಹೂಡಿಕೆ ಮತ್ತು ಲಾಭದಾಯಕತೆ", मराठी: "गुंतवणूक आणि नफा" },
+                msp_hikes: { English: "MSP Increases 2025-26", اردو: "ایم ایس پی میں اضافہ 2025-26", हिन्दी: "एमएसपी वृद्धि 2025-26", ಕನ್ನಡ: "ಎಂಎಸ್ಪಿ ಹೆಚ್ಚಳ 2025-26", मराठी: "एमएसपी वाढ 2025-26" },
+                mustard: { English: "Rapeseed & Mustard:", اردو: "سرسوں اور رائی:", हिन्दी: "सरसों और तोरिया:", ಕನ್ನಡ: "ರಾಪ್ಸೀಡ್ ಮತ್ತು ಸಾಸಿವೆ:", मराठी: "मोहरी आणि सरसो:" },
+                lentil: { English: "Lentil (Masur):", اردو: "مسور:", हिन्दी: "मसूर:", ಕನ್ನಡ: "ಮಸೂರ (ಮಸೂರ್):", मराठी: "मसूर:" },
+                wheat: { English: "Wheat:", اردو: "گندم:", हिन्दी: "गेहूं:", ಕನ್ನಡ: "ಗೋಧಿ:", मराठी: "गहू:" },
+                summary_title: { English: "Summary & Strategic Takeaway", اردو: "خلاصہ اور اسٹریٹجک نتیجہ", हिन्दी: "सारांश और रणनीतिक निष्कर्ष", ಕನ್ನಡ: "ಸಾರಾಂಶ ಮತ್ತು ವ್ಯೂಹಾತ್ಮಕ ಟೇಕ್ಅವೇ", मराठी: "सारांश आणि धोरणात्मक निष्कर्ष" },
+                summary_conclusion: { English: "India's agricultural sector in 2024 showed strong fundamentals with diversification into high-value crops driving farmer income growth. The shift toward premium crops, technology adoption, and export orientation positions the sector for sustained growth in 2025 and beyond.", اردو: "2024 میں ہندوستان کے زرعی شعبے نے اعلیٰ قیمت والی فصلوں میں تنوع کے ساتھ مضبوط بنیادیں دکھائیں جس سے کسانوں کی آمدنی میں اضافہ ہوا۔ پریمیم فصلوں، ٹیکنالوجی کو اپنانے، اور برآمدی رجحان کی طرف تبدیلی اس شعبے کو 2025 اور اس کے بعد بھی پائیدار ترقی کے لیے پوزیشن میں رکھتی ہے۔", हिन्दी: "2024 में भारत के कृषि क्षेत्र ने उच्च-मूल्य वाली फसलों में विविधीकरण के साथ मजबूत बुनियादी बातों को दिखाया, जिससे किसान आय में वृद्धि हुई। प्रीमियम फसलों, प्रौद्योगिकी अपनाने और निर्यात अभिविन्यास की ओर बदलाव इस क्षेत्र को 2025 और उसके बाद में निरंतर वृद्धि के लिए स्थापित करता है।", ಕನ್ನಡ: "2024 ರಲ್ಲಿ ಭಾರತದ ಕೃಷಿ ವಲಯವು ಹೆಚ್ಚಿನ ಮೌಲ್ಯದ ಬೆಳೆಗಳಾಗಿ ವೈವಿಧ್ಯೀಕರಣದೊಂದಿಗೆ ಬಲವಾದ ಮೂಲಭೂತ ಅಂಶಗಳನ್ನು ತೋರಿಸಿದೆ, ಇದು ರೈತರ ಆದಾಯದ ಬೆಳವಣಿಗೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಪ್ರೀಮಿಯಂ ಬೆಳೆಗಳು, ತಂತ್ರಜ್ಞಾನ ಅಳವಡಿಕೆ, ಮತ್ತು ರಫ್ತು ದೃಷ್ಟಿಕೋನದತ್ತ ಬದಲಾವಣೆಯು 2025 ಮತ್ತು ಅದರಾಚೆಗೆ ನಿರಂತರ ಬೆಳವಣಿಗೆಗೆ ವಲಯವನ್ನು ಸ್ಥಾನೀಕರಿಸುತ್ತದೆ.", मराठी: "2024 मध्ये भारताच्या कृषी क्षेत्राने उच्च-मूल्याच्या पिकांमध्ये विविधीकरणासह मजबूत मूलभूत तत्त्वे दर्शविली, ज्यामुळे शेतकऱ्यांच्या उत्पन्नात वाढ झाली. प्रीमियम पिके, तंत्रज्ञान अवलंबन आणि निर्यात अभिमुखतेकडे वळल्यामुळे हे क्षेत्र 2025 आणि त्यानंतरच्या काळात शाश्वत वाढीसाठी सज्ज झाले आहे." },
+                summary_takeaway_title: { English: "Key Takeaway", اردو: "اہم نتیجہ", हिन्दी: "मुख्य निष्कर्ष", ಕನ್ನಡ: "ಪ್ರಮುಖ ಟೇಕ್ಅವೇ", मराठी: "मुख्य निष्कर्ष" },
+                summary_takeaway_text: { English: "Farmers focusing on high-value crops with technology integration and market linkages can achieve 3-5x higher incomes compared to traditional cereal farming, making 2025 an opportune year for agricultural transformation.", اردو: "ٹیکنالوجی کے انضمام اور مارکیٹ سے روابط کے ساتھ اعلیٰ قیمت والی فصلوں پر توجہ مرکوز کرنے والے کسان روایتی اناج کی کاشت کے مقابلے میں 3-5 گنا زیادہ آمدنی حاصل کر سکتے ہیں، جس سے 2025 زرعی تبدیلی کے لیے ایک بہترین سال بن جاتا ہے۔", हिन्दी: "प्रौद्योगिकी एकीकरण और बाजार संबंधों के साथ उच्च-मूल्य वाली फसलों पर ध्यान केंद्रित करने वाले किसान पारंपरिक अनाज की खेती की तुलना में 3-5 गुना अधिक आय प्राप्त कर सकते हैं, जिससे 2025 कृषि परिवर्तन के लिए एक उपयुक्त वर्ष बन जाता है।", ಕನ್ನಡ: "ತಂತ್ರಜ್ಞಾನದ ಏಕೀಕರಣ ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಸಂಪರ್ಕಗಳೊಂದಿಗೆ ಹೆಚ್ಚಿನ ಮೌಲ್ಯದ ಬೆಳೆಗಳ ಮೇಲೆ ಕೇಂದ್ರೀಕರಿಸುವ ರೈತರು ಸಾಂಪ್ರದಾಯಿಕ ಧಾನ್ಯ ಕೃಷಿಗೆ ಹೋಲಿಸಿದರೆ 3-5 ಪಟ್ಟು ಹೆಚ್ಚಿನ ಆದಾಯವನ್ನು ಸಾಧಿಸಬಹುದು, ಇದು 2025 ಅನ್ನು ಕೃಷಿ ಪರಿವರ್ತನೆಗೆ ಒಂದು ಅವಕಾಶದ ವರ್ಷವನ್ನಾಗಿ ಮಾಡುತ್ತದೆ.", मराठी: "तंत्रज्ञान एकीकरण आणि बाजारपेठेतील दुवे असलेल्या उच्च-मूल्याच्या पिकांवर लक्ष केंद्रित करणारे शेतकरी पारंपारिक तृणधान्य शेतीच्या तुलनेत 3-5 पट जास्त उत्पन्न मिळवू शकतात, ज्यामुळे 2025 हे कृषी परिवर्तनासाठी एक योग्य वर्ष बनते." },
+                // Chart Labels
+                organic_crops: { English: "Organic Crops", اردو: "نامیاتی فصلیں", हिन्दी: "जैविक फसलें", ಕನ್ನಡ: "ಸಾವಯವ ಬೆಳೆಗಳು", मराठी: "सेंद्रिय पिके" },
+                millets: { English: "Millets", اردو: "باجرہ", हिन्दी: "बाजरा", ಕನ್ನಡ: "ಸಿರಿಧಾನ್ಯಗಳು", मराठी: "बाजरी" },
+                medicinal_plants: { English: "Medicinal Plants", اردو: "طبی پودے", हिन्दी: "औषधीय पौधे", ಕನ್ನಡ: "ಔಷಧೀಯ ಸಸ್ಯಗಳು", मराठी: "औषधी वनस्पती" },
+                exotic_foods: { English: "Exotic Foods", اردو: "غیر ملکی کھانے", हिन्दी: "विदेशी खाद्य पदार्थ", ಕನ್ನಡ: "ವಿಲಕ್ಷಣ ಆಹಾರಗಳು", मराठी: "विदेशी खाद्यपदार्थ" },
+            };
+
+            const setLanguage = (lang) => {
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[key] && translations[key][lang]) {
+                        el.textContent = translations[key][lang];
+                    }
+                });
+                // Update chart labels
+                if (window.predictionsChart) {
+                    const currentLang = localStorage.getItem('farmEaseLang') || 'English';
+                    window.predictionsChart.data.labels = [
+                        translations.organic_crops[currentLang],
+                        translations.millets[currentLang],
+                        translations.medicinal_plants[currentLang],
+                        translations.exotic_foods[currentLang]
+                    ];
+                    window.predictionsChart.update();
+                }
+            };
+
+            // --- MOBILE MENU ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-button');
+            const mobileMenuItems = document.getElementById('mobile-menu-items');
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuItems.classList.toggle('hidden');
+            });
+            
+            // --- LANGUAGE DROPDOWN & SELECTOR ---
+            const dropdownButton = document.querySelector('.relative.dropdown button');
+            const dropdownMenu = dropdownButton.nextElementSibling;
+            
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('is-visible');
+            });
+
+            window.addEventListener('click', () => {
+                if(dropdownMenu.classList.contains('is-visible')) {
+                    dropdownMenu.classList.remove('is-visible');
+                }
+            });
+            
+            const langLinks = document.querySelectorAll('.dropdown-menu a');
+            const langNotification = document.getElementById('language-notification');
+            const langNameSpan = document.getElementById('lang-name');
+            let notificationTimeout;
+
+            langLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.remove('is-visible');
+                    const lang = this.getAttribute('data-lang');
+                    localStorage.setItem('farmEaseLang', lang); // Save before updating
+                    setLanguage(lang);
+
+                    langNameSpan.textContent = lang;
+                    langNotification.classList.remove('opacity-0');
+
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = setTimeout(() => {
+                        langNotification.classList.add('opacity-0');
+                    }, 3000);
+                });
+            });
+            
+            // --- Chart.js Ring Chart ---
+            const ctx = document.getElementById('predictionsChart').getContext('2d');
+            const currentLang = localStorage.getItem('farmEaseLang') || 'English';
+            Chart.register(ChartDataLabels);
+
+            window.predictionsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        translations.organic_crops[currentLang],
+                        translations.millets[currentLang],
+                        translations.medicinal_plants[currentLang],
+                        translations.exotic_foods[currentLang]
+                    ],
+                    datasets: [{
+                        label: 'Projected Growth %',
+                        data: [28, 35, 45, 30], // Approximate average values
+                        backgroundColor: [
+                            '#16a34a', // Green
+                            '#f59e0b', // Amber
+                            '#3b82f6', // Blue
+                            '#ec4899'  // Pink
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                           display: false
+                        },
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let label = context.chart.data.labels[context.dataIndex];
+                                // Split label if too long
+                                if (label.length > 15) {
+                                   label = label.split(' ');
+                                }
+                                return label;
+                            },
+                            color: '#334155',
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 8,
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // --- SET INITIAL LANGUAGE ---
+            const savedLang = localStorage.getItem('farmEaseLang') || 'English';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
+
